@@ -12,11 +12,13 @@ class PUZZLEGAME_API UPlayerComponent : public UActorComponent
 
 public:	
 	UPlayerComponent();
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Line Trace")
+	float LineTraceDistance;
 
 protected:
 	virtual void BeginPlay() override;
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	FHitResult LineTrace() const; 
+	FHitResult LineTrace();
 };
