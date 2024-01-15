@@ -16,8 +16,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	virtual void Tick(float DeltaTime) override;
-
 	UFUNCTION(BlueprintCallable, Category="Windmill")
 	void RotateSail(UStaticMeshComponent* Sail, float RotationSpeed);
 };
