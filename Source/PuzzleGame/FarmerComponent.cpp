@@ -29,4 +29,3 @@ void UFarmerComponent::AddSeeds(ESeedType SeedType, int32 SeedCount)
 		UE_LOG(LogTemp, Warning, TEXT("Seed: %s | Count: %i"), ESeedType_Loggable::FHelper::ToString(SeedType), SeedCount);
 	}
 }
-

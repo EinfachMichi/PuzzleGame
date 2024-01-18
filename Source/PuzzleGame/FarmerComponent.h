@@ -20,11 +20,11 @@ public:
 	
 public:	
 	UFarmerComponent();
-
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void AddSeeds(ESeedType SeedType, int32 SeedCount);
-
+	
 protected:
 	virtual void BeginPlay() override;
 
