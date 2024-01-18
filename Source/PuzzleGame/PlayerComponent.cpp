@@ -100,6 +100,6 @@ void UPlayerComponent::InteractWithActor()
 
 	if(IInteractable* Interactable = Cast<IInteractable>(CurrentLineTraceActor))
 	{
-		Interactable->Interact();
+		Interactable->Interact(Cast<APawn>(GetOwner()));
 	}
 }

@@ -17,7 +17,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Info")
 	int SeedCount;
 
-	virtual void Interact() override;
+	virtual void Interact(APawn* ) override;
 
 protected:
 	virtual void BeginPlay() override;

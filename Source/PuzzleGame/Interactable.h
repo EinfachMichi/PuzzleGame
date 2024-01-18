@@ -15,6 +15,6 @@ class PUZZLEGAME_API IInteractable
 	GENERATED_BODY()
 	
 public:
-	virtual void Interact() {}
+	virtual void Interact(APawn* Pawn) {}
 	virtual void SetInteractable(bool Interactable) {}
 };

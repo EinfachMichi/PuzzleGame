@@ -8,7 +8,7 @@ void AItemActor::BeginPlay()
 }
 
 
-void AItemActor::Interact()
+void AItemActor::Interact(APawn* Pawn)
 {
 	
 }

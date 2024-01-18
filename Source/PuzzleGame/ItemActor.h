@@ -14,7 +14,7 @@ public:
 	UStaticMeshComponent* MeshComponent;
 	
 public:
-	virtual void Interact() override;
+	virtual void Interact(APawn* Pawn) override;
 	virtual void SetInteractable(bool Interactable) override;
 
 private:
