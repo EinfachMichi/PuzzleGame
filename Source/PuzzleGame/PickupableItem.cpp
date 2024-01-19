@@ -38,7 +38,7 @@ void APickupableItem::OnPickedUp()
 
 void APickupableItem::OnReleased()
 {
-	EnableOutline();
+	DisableOutline();
 }
 
 void APickupableItem::ShowInteraction()
