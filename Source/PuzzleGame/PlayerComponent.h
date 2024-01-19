@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PickupableItem.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ActorComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
@@ -16,14 +17,14 @@ public:
 	float LineTraceLength = 250.f;
 
 	UPROPERTY(EditAnywhere, Category="Line Tracing")
-	bool Debug;
-	
+	bool DebugLineTrace;
+
 private:
 	UCameraComponent* CameraComponent;
 	FHitResult LineTraceHitResult;
 	AActor* CurrentLineTraceActor;
 	AActor* OldLineTraceActor;
-	AActor* PickedUpActor;
+	APickupableItem* PickedUpItem;
 	float PickedUpOffset;
 	UPhysicsHandleComponent* PhysicsHandle;
 	
@@ -33,19 +34,19 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable, Category="Interaction")
-	void InteractWithActor();
+	void Interact();
 
 	UFUNCTION(BlueprintCallable, Category="Interaction")
-	bool TryPickUpActor();
+	void PickingUpItem();
 
 	UFUNCTION(BlueprintCallable, Category="Interaction")
-	bool TryReleasePickuedUpActor();
+	void ReleaseItem();
 	
-	void PickupActor(UPrimitiveComponent* Component);
+	void PickupItem(APickupableItem* Item);
 	FHitResult GetHitResult();
+	APickupableItem* GetPickedUpItem();
 	
 private:
-	void Initialize();
 	void ShootLineTrace();
 	void CheckForHitResultEvents();
 

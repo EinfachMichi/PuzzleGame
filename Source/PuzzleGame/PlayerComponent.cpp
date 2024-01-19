@@ -1,6 +1,7 @@
 #include "PlayerComponent.h"
 
-#include "Interactable.h"
+#include "InteractableItem.h"
+#include "Outlineable.h"
 
 UPlayerComponent::UPlayerComponent()
 {
@@ -11,11 +12,6 @@ void UPlayerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Initialize();
-}
-
-void UPlayerComponent::Initialize()
-{
 	CameraComponent = GetOwner()->FindComponentByClass<UCameraComponent>();
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 }
@@ -52,7 +48,7 @@ void UPlayerComponent::ShootLineTrace()
 
 	LineTraceHitResult = HitResult;
 	
-	if(Debug)
+	if(DebugLineTrace)
 	{
 		if (Success)
 		{
@@ -72,27 +68,28 @@ void UPlayerComponent::CheckForHitResultEvents()
 
 	if(IInteractable* CurrentInteractable = Cast<IInteractable>(CurrentLineTraceActor))
 	{
-		CurrentInteractable->InInteractionRange();
+		CurrentInteractable->ShowInteraction();
 
-		if(IInteractable* OldInteractable = Cast<IInteractable>(OldLineTraceActor))
+		if(IInteractable* OldInteractable= Cast<IInteractable>(OldLineTraceActor))
 		{
 			if(CurrentLineTraceActor != OldLineTraceActor)
 			{
-				OldInteractable->OutOfInteractionRange();
+				OldInteractable->HideInteraction();
 			}
 		}
 	}
 	else
 	{
-		if(IInteractable* OldInteractable = Cast<IInteractable>(OldLineTraceActor))
+		if(IInteractable* OldInteractable= Cast<IInteractable>(OldLineTraceActor))
 		{
-			OldInteractable->OutOfInteractionRange();
+			OldInteractable->HideInteraction();
 		}
 	}
+	
 	OldLineTraceActor = CurrentLineTraceActor;
 }
 
-void UPlayerComponent::InteractWithActor()
+void UPlayerComponent::Interact()
 {
 	if(!CurrentLineTraceActor)
 	{
@@ -105,64 +102,76 @@ void UPlayerComponent::InteractWithActor()
 	}
 }
 
-void UPlayerComponent::PickupActor(UPrimitiveComponent* Component)
+void UPlayerComponent::PickupItem(APickupableItem* Item)
+{
+	if(!PhysicsHandle || PickedUpItem)
+	{
+		return;
+	}
+	
+	PickedUpItem = Item;
+	PickedUpOffset = FVector::Distance(CameraComponent->GetComponentLocation(), LineTraceHitResult.ImpactPoint);
+	FVector HitLocation = CameraComponent->GetComponentLocation() + CameraComponent->GetForwardVector() * PickedUpOffset;
+	PhysicsHandle->GrabComponentAtLocationWithRotation(PickedUpItem->MeshComponent, NAME_None, HitLocation, FRotator::ZeroRotator);
+	PickedUpItem->MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	PickedUpItem->OnPickedUp();
+}
+
+void UPlayerComponent::PickingUpItem()
 {
 	if(!PhysicsHandle)
 	{
 		return;
 	}
 	
-	PickedUpActor = Component->GetOwner();
-	PickedUpOffset = FVector::Distance(CameraComponent->GetComponentLocation(), LineTraceHitResult.ImpactPoint);
-	FVector HitLocation = CameraComponent->GetComponentLocation() + CameraComponent->GetForwardVector() * PickedUpOffset;
-	PhysicsHandle->GrabComponentAtLocationWithRotation(Component, NAME_None, HitLocation, FRotator::ZeroRotator);
-}
-
-bool UPlayerComponent::TryPickUpActor()
-{
-	if(!PickedUpActor || !PhysicsHandle)
+	if(!PickedUpItem)
 	{
-		return false;
+		if(APickupableItem* PickupableItem = Cast<APickupableItem>(CurrentLineTraceActor))
+		{
+			PickupItem(PickupableItem);
+		}
+		else
+		{
+			return;
+		}
 	}
 
 	if(!PhysicsHandle->GrabbedComponent)
 	{
-		return false;
+		return;
 	}
-
+	
 	FVector NewLocation = CameraComponent->GetComponentLocation() + CameraComponent->GetForwardVector() * PickedUpOffset;
 	PhysicsHandle->SetTargetLocation(NewLocation);
-	return true;
 }
 
-bool UPlayerComponent::TryReleasePickuedUpActor()
+void UPlayerComponent::ReleaseItem()
 {
-	if(!PickedUpActor || !PhysicsHandle)
+	if(!PickedUpItem || !PhysicsHandle)
 	{
-		return false;
+		return;
 	}
 
 	if(!PhysicsHandle->GrabbedComponent)
 	{
-		return false;
+		return;
 	}
 	
 	PhysicsHandle->ReleaseComponent();
 
-	if(UStaticMeshComponent* PickedUpActorStaticMeshComponent = PickedUpActor->FindComponentByClass<UStaticMeshComponent>())
-	{
-		if(PickedUpActorStaticMeshComponent->IsSimulatingPhysics())
-		{
-			PickedUpActorStaticMeshComponent->SetPhysicsLinearVelocity(
-				PickedUpActorStaticMeshComponent->GetPhysicsLinearVelocity() * 0.2f);
-		}
-	}
-
-	PickedUpActor = nullptr;
-	return true;
+	PickedUpItem->MeshComponent->SetPhysicsLinearVelocity(PickedUpItem->MeshComponent->GetPhysicsLinearVelocity() * 0.2f);
+	PickedUpItem->MeshComponent->SetCollisionResponseToChannel(PickedUpItem->CollisionChannel, PickedUpItem->CollisionResponse);
+	PickedUpItem->OnReleased();
+	
+	PickedUpItem = nullptr;
 }
 
 FHitResult UPlayerComponent::GetHitResult()
 {
 	return LineTraceHitResult;
+}
+
+APickupableItem* UPlayerComponent::GetPickedUpItem()
+{
+	return PickedUpItem;
 }

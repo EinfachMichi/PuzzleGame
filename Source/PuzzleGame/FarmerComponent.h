@@ -28,7 +28,7 @@ public:
 	bool PlantMode;
 
 private:
-	ECropType CurrentCropType;
+	ECropType CurrentCropTypeEquipped;
 	UPlayerComponent* PlayerComponent;
 	AActor* CurrentLineTraceActor;
 	AActor* OldLineTraceActor;
@@ -47,14 +47,14 @@ public:
 	void SetSeedType(ECropType NewCropType);
 
 	UFUNCTION(BlueprintCallable, Category="Farming")
-	bool TryPlantSeed();
+	void PlantSeed();
 
 	UFUNCTION(BlueprintCallable, Category="Farming")
-	bool TryHarvestCrop();
+	void HarvestCrop();
 	
 private:
-	void Initialize();
 	void ManagePlantMode();
+	bool HasEnoughSeeds();
 	
 protected:
 	virtual void BeginPlay() override;

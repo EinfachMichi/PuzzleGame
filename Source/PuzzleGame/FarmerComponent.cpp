@@ -1,7 +1,6 @@
 #include "FarmerComponent.h"
 
-#include "FarmingGameInstance.h"
-#include "Plantable.h"
+#include "CropPlot.h"
 
 UFarmerComponent::UFarmerComponent()
 {
@@ -12,11 +11,6 @@ void UFarmerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Initialize();
-}
-
-void UFarmerComponent::Initialize()
-{
 	PlayerComponent = GetOwner()->FindComponentByClass<UPlayerComponent>();
 }
 
@@ -29,7 +23,7 @@ void UFarmerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UFarmerComponent::AddSeeds(ECropType CropType, int32 SeedCount)
 {
-	CurrentCropType = CropType;
+	CurrentCropTypeEquipped = CropType;
 	if(CropSeedInventory.Contains(CropType))
 	{
 		SeedCount += CropSeedInventory[CropType];
@@ -47,9 +41,9 @@ void UFarmerComponent::TogglePlantMode()
 {
 	if(PlantMode)
 	{
-		if(IPlantable* CurrentPlantable = Cast<IPlantable>(CurrentLineTraceActor))
+		if(ACropPlot* CropPlot = Cast<ACropPlot>(CurrentLineTraceActor))
 		{
-			CurrentPlantable->OutOfPlantableRange();
+			CropPlot->UpdatePlantableVisuels(false);
 		}
 	}
 	
@@ -59,7 +53,7 @@ void UFarmerComponent::TogglePlantMode()
 
 void UFarmerComponent::SetSeedType(ECropType NewCropType)
 {
-	CurrentCropType = NewCropType;
+	CurrentCropTypeEquipped = NewCropType;
 }
 
 void UFarmerComponent::ManagePlantMode()
@@ -71,81 +65,76 @@ void UFarmerComponent::ManagePlantMode()
 
 	CurrentLineTraceActor = PlayerComponent->GetHitResult().GetActor();
 	
-	if(IPlantable* CurrentPlantable = Cast<IPlantable>(CurrentLineTraceActor))
+	if(ACropPlot* CropPlot = Cast<ACropPlot>(CurrentLineTraceActor))
 	{
-		CurrentPlantable->InPlantableRange(CurrentCropType != ECropType::None);
+		CropPlot->UpdatePlantableVisuels(true, HasEnoughSeeds());
 
-		if(IPlantable* OldInteractable = Cast<IPlantable>(OldLineTraceActor))
+		if(ACropPlot* OldCropPlot = Cast<ACropPlot>(OldLineTraceActor))
 		{
 			if(CurrentLineTraceActor != OldLineTraceActor)
 			{
-				OldInteractable->OutOfPlantableRange();
+				OldCropPlot->UpdatePlantableVisuels(false);
 			}
 		}
 	}
 	else
 	{
-		if(IPlantable* OldInteractable = Cast<IPlantable>(OldLineTraceActor))
+		if(ACropPlot* OldCropPlot = Cast<ACropPlot>(OldLineTraceActor))
 		{
-			OldInteractable->OutOfPlantableRange();
+			OldCropPlot->UpdatePlantableVisuels(false);
 		}
 	}
 	
 	OldLineTraceActor = CurrentLineTraceActor;
 }
 
-bool UFarmerComponent::TryHarvestCrop()
+void UFarmerComponent::HarvestCrop()
 {
-	if(PlantMode)
+	if(PlantMode || PlayerComponent->GetPickedUpItem())
 	{
-		return false;
+		return;
 	}
 
 	CurrentLineTraceActor = PlayerComponent->GetHitResult().GetActor();
 	
-	if(IPlantable* Plantable = Cast<IPlantable>(CurrentLineTraceActor))
+	if(ACropPlot* CropPlot = Cast<ACropPlot>(CurrentLineTraceActor))
 	{
-		ACropActor* CropActor = Plantable->Harvest();
-		if(CropActor)
+		ACrop* Crop = CropPlot->Harvest();
+		if(Crop)
 		{
-			if(UStaticMeshComponent* MeshComponent = CropActor->GetStaticMeshComponent())
-			{
-				PlayerComponent->PickupActor(MeshComponent);
-				return true;
-			}
+			PlayerComponent->PickupItem(Crop);
 		}
 	}
-	return false;
 }
 
-bool UFarmerComponent::TryPlantSeed()
+void UFarmerComponent::PlantSeed()
 {
-	if(!PlantMode || CurrentCropType == ECropType::None)
+	if(!PlantMode || !HasEnoughSeeds())
 	{
-		return false;
+		return;
 	}
 
 	bool Success = false;
-	if(IPlantable* Plantable = Cast<IPlantable>(CurrentLineTraceActor))
+	if(ACropPlot* CropPlot = Cast<ACropPlot>(CurrentLineTraceActor))
 	{
-		Success = Plantable->Plant(CurrentCropType);
+		Success = CropPlot->Plant(CurrentCropTypeEquipped);
 	}
 
 	if(Success)
 	{
-		CropSeedInventory[CurrentCropType] -= 1;
-		if(CropSeedInventory[CurrentCropType] <= 0)
+		CropSeedInventory[CurrentCropTypeEquipped] -= 1;
+		if(CropSeedInventory[CurrentCropTypeEquipped] <= 0)
 		{
-			CropSeedInventory.Remove(CurrentCropType);
-			CurrentCropType = ECropType::None;
+			CropSeedInventory.Remove(CurrentCropTypeEquipped);
+			CurrentCropTypeEquipped = ECropType::None;
 			//TODO: implement next seed logic
 		}
 		
 		if(LogCropSeedInventory)
 		{
-			if(CropSeedInventory.Contains(CurrentCropType))
+			if(CropSeedInventory.Contains(CurrentCropTypeEquipped))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Seed: %s | Count: %i"), ECrop_Loggable::FHelper::ToString(CurrentCropType), CropSeedInventory[CurrentCropType]);
+				UE_LOG(LogTemp, Warning, TEXT("Seed: %s | Count: %i"), ECrop_Loggable::FHelper::ToString(CurrentCropTypeEquipped), CropSeedInventory[CurrentCropTypeEquipped]);
 			}
 			else
 			{
@@ -153,6 +142,9 @@ bool UFarmerComponent::TryPlantSeed()
 			}
 		}
 	}
+}
 
-	return Success;
+bool UFarmerComponent::HasEnoughSeeds()
+{
+	return CurrentCropTypeEquipped != ECropType::None;
 }

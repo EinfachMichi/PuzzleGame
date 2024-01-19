@@ -14,11 +14,8 @@ class PUZZLEGAME_API IInteractable
 {
 	GENERATED_BODY()
 
-protected:
-	bool Interactable;
-	
 public:
 	virtual void Interact(APawn* Pawn) {}
-	virtual void InInteractionRange() {}
-	virtual void OutOfInteractionRange() {}
+	virtual void ShowInteraction() {}
+	virtual void HideInteraction() {}
 };
