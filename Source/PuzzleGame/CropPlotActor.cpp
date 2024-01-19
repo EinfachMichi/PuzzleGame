@@ -32,16 +32,11 @@ void ACropPlotActor::BeginPlay()
 
 	Plantable = true;
 	
-	constexpr int32 NumEnumValues = static_cast<int32>(ECropType::Melon);
-	int32 RandomIndex = FMath::RandRange(0, NumEnumValues);
-
-	const ECropType RandomSeedType =  static_cast<ECropType>(RandomIndex);
-	Plant(RandomSeedType);
-}
-
-bool ACropPlotActor::IsOccupied() const
-{
-	return Occupied;
+	// constexpr int32 NumEnumValues = static_cast<int32>(ECropType::Melon);
+	// int32 RandomIndex = FMath::RandRange(0, NumEnumValues);
+	//
+	// const ECropType RandomSeedType =  static_cast<ECropType>(RandomIndex);
+	// Plant(RandomSeedType);
 }
 
 void ACropPlotActor::UpdateGrowthState(float DeltaSeconds)
@@ -102,6 +97,7 @@ bool ACropPlotActor::Plant(ECropType NewCropType)
 	if(UFarmingGameInstance* GameInstance = Cast<UFarmingGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		CropMesh->SetStaticMesh(GameInstance->GetSeedMesh(CropType));
+		GrowthRatePerMinute = GameInstance->GetGrowthRate(CropType);
 		GrowthState = DEFAULT_GROWTH_STAGE;
 		Occupied = true;
 		Plantable = false;
@@ -124,14 +120,14 @@ ECropType ACropPlotActor::Harvest()
 	return CropType;
 }
 
-void ACropPlotActor::EnterPlantableState()
+void ACropPlotActor::EnterPlantableState(bool HasEnoughSeeds)
 {
 	if(!CropPlotMesh)
 	{
 		return;
 	}
 
-	if(!Occupied && Plantable)
+	if(!Occupied && Plantable && HasEnoughSeeds)
 	{
 		CropPlotMesh->SetCustomDepthStencilValue(1);
 	}

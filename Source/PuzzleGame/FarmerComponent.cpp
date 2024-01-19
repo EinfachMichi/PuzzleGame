@@ -29,6 +29,7 @@ void UFarmerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UFarmerComponent::AddSeeds(ECropType CropType, int32 SeedCount)
 {
+	CurrentCropType = CropType;
 	if(CropSeedInventory.Contains(CropType))
 	{
 		SeedCount += CropSeedInventory[CropType];
@@ -72,7 +73,7 @@ void UFarmerComponent::ManageBuildMode()
 	
 	if(IPlantable* CurrentPlantable = Cast<IPlantable>(CurrentLineTraceActor))
 	{
-		CurrentPlantable->EnterPlantableState();
+		CurrentPlantable->EnterPlantableState(CurrentCropType != ECropType::None);
 
 		if(IPlantable* OldInteractable = Cast<IPlantable>(OldLineTraceActor))
 		{
@@ -91,4 +92,43 @@ void UFarmerComponent::ManageBuildMode()
 	}
 	
 	OldLineTraceActor = CurrentLineTraceActor;
+}
+
+bool UFarmerComponent::TryPlantSeed()
+{
+	if(!BuildMode || CurrentCropType == ECropType::None)
+	{
+		return false;
+	}
+
+	bool Success = false;
+	if(IPlantable* Plantable = Cast<IPlantable>(CurrentLineTraceActor))
+	{
+		Success = Plantable->Plant(CurrentCropType);
+	}
+
+	if(Success)
+	{
+		CropSeedInventory[CurrentCropType] -= 1;
+		if(CropSeedInventory[CurrentCropType] <= 0)
+		{
+			CropSeedInventory.Remove(CurrentCropType);
+			CurrentCropType = ECropType::None;
+			//TODO: implement next seed logic
+		}
+		
+		if(LogCropSeedInventory)
+		{
+			if(CropSeedInventory.Contains(CurrentCropType))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Seed: %s | Count: %i"), ECrop_Loggable::FHelper::ToString(CurrentCropType), CropSeedInventory[CurrentCropType]);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("No more seeds in inventory"));
+			}
+		}
+	}
+
+	return Success;
 }

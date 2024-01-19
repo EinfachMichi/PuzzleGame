@@ -11,9 +11,13 @@ class PUZZLEGAME_API UFarmingGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, Category="Seeds")
-	TMap<ECropType, UStaticMesh*> SeedActorMeshes;
+	UPROPERTY(EditAnywhere, Category="Crops")
+	TMap<ECropType, UStaticMesh*> CropActorMeshes;
+
+	UPROPERTY(EditAnywhere, Category="Crops")
+	TMap<ECropType, float> CropGrowthRates;
 
 public:
-	UStaticMesh* GetSeedMesh(ECropType SeedType);
+	UStaticMesh* GetSeedMesh(ECropType CropType);
+	float GetGrowthRate(ECropType CropType);
 };

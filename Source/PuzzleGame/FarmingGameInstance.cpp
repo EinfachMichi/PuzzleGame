@@ -1,10 +1,19 @@
 #include "FarmingGameInstance.h"
 
-UStaticMesh* UFarmingGameInstance::GetSeedMesh(ECropType SeedType)
+UStaticMesh* UFarmingGameInstance::GetSeedMesh(ECropType CropType)
 {
-	if(SeedActorMeshes.Contains(SeedType))
+	if(CropActorMeshes.Contains(CropType))
 	{
-		return SeedActorMeshes[SeedType];
+		return CropActorMeshes[CropType];
 	}
 	return nullptr;
+}
+
+float UFarmingGameInstance::GetGrowthRate(ECropType CropType)
+{
+	if(CropGrowthRates.Contains(CropType))
+	{
+		return CropGrowthRates[CropType];
+	}
+	return -1;
 }

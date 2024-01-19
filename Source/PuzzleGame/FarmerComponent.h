@@ -46,6 +46,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Building")
 	void SetSeedType(ECropType NewCropType);
 
+	UFUNCTION(BlueprintCallable, Category="Building")
+	bool TryPlantSeed();
+
 private:
 	// This method is called in tick
 	void ManageBuildMode();

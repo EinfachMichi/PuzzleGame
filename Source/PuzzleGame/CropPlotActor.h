@@ -43,8 +43,6 @@ public:
 	ACropPlotActor();
 
 	virtual void Tick(float DeltaSeconds) override;
-	
-	bool IsOccupied() const;
 
 private:
 	void UpdateGrowthState(float DeltaSeconds);
@@ -56,6 +54,6 @@ protected:
 	
 	virtual bool Plant(ECropType NewCropType) override;
 	virtual ECropType Harvest() override;
-	virtual void EnterPlantableState() override;
+	virtual void EnterPlantableState(bool HasEnoughSeeds) override;
 	virtual void ExitPlantableState() override;
 };

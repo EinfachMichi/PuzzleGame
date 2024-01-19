@@ -21,6 +21,6 @@ protected:
 public:
 	virtual bool Plant(ECropType CropType) { return false; }
 	virtual ECropType Harvest() { return ECropType::None; }
-	virtual void EnterPlantableState() {}
+	virtual void EnterPlantableState(bool HasEnoughSeeds) {}
 	virtual void ExitPlantableState() {}
 };
