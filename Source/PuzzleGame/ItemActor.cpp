@@ -8,19 +8,33 @@ void AItemActor::BeginPlay()
 }
 
 
-void AItemActor::Interact(APawn* Pawn)
-{
-	
-}
-
-void AItemActor::SetInteractable(bool Interactable)
+void AItemActor::EnterInteractionState()
 {
 	if(!MeshComponent)
 	{
 		return;
 	}
 
-	MeshComponent->SetRenderCustomDepth(Interactable);
+	if(Interactable)
+	{
+		MeshComponent->SetCustomDepthStencilValue(1);
+	}
+	else
+	{
+		MeshComponent->SetCustomDepthStencilValue(2);
+	}
+
+	MeshComponent->SetRenderCustomDepth(true);
+}
+
+void AItemActor::ExitInteractionState()
+{
+	if(!MeshComponent)
+	{
+		return;
+	}
+
+	MeshComponent->SetRenderCustomDepth(false);
 }
 
 void AItemActor::Initialize()

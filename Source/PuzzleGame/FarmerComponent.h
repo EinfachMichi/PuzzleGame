@@ -1,7 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ESeedType.h"
+#include "ECropType.h"
+#include "PlayerComponent.h"
 #include "Components/ActorComponent.h"
 #include "FarmerComponent.generated.h"
 
@@ -15,10 +16,10 @@ class PUZZLEGAME_API UFarmerComponent : public UActorComponent
 
 public:
 	UPROPERTY(EditAnywhere, Category="Debug")
-	bool LogSeedInventory;
+	bool LogCropSeedInventory;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Seeds")
-	TMap<ESeedType, int32> SeedInventory;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Crops")
+	TMap<ECropType, int32> CropSeedInventory;
 
 	UPROPERTY(BlueprintAssignable, Category="Building")
 	FBuildModeChanged BuildModeChanged;
@@ -27,24 +28,28 @@ public:
 	bool BuildMode;
 
 private:
-	ESeedType CurrentSeedType;
+	ECropType CurrentCropType;
+	UPlayerComponent* PlayerComponent;
+	AActor* CurrentLineTraceActor;
+	AActor* OldLineTraceActor;
 	
 public:	
 	UFarmerComponent();
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void AddSeeds(ESeedType SeedType, int32 SeedCount);
+	void AddSeeds(ECropType CropType, int32 SeedCount);
 
 	UFUNCTION(BlueprintCallable, Category="Building")
 	void ToggleBuildMode();
 
 	UFUNCTION(BlueprintCallable, Category="Building")
-	void SetSeedType(ESeedType NewSeedType);
+	void SetSeedType(ECropType NewCropType);
 
 private:
 	// This method is called in tick
 	void ManageBuildMode();
+	void Initialize();
 	
 protected:
 	virtual void BeginPlay() override;

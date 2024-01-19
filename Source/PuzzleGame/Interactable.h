@@ -13,8 +13,12 @@ class UInteractable : public UInterface
 class PUZZLEGAME_API IInteractable
 {
 	GENERATED_BODY()
+
+protected:
+	bool Interactable;
 	
 public:
 	virtual void Interact(APawn* Pawn) {}
-	virtual void SetInteractable(bool Interactable) {}
+	virtual void EnterInteractionState() {}
+	virtual void ExitInteractionState() {}
 };

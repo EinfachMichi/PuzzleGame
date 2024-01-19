@@ -5,15 +5,18 @@
 ACropPlotActor::ACropPlotActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	DefaultSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneComponent"));
+	DefaultSceneComponent->SetupAttachment(RootComponent);
 	
 	CropPlotMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CropPlotStaticMeshComponent"));
-	CropPlotMesh->SetupAttachment(RootComponent);
+	CropPlotMesh->SetupAttachment(DefaultSceneComponent);
 	
 	CropMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CropStaticMeshComponent"));
-	CropMesh->SetupAttachment(CropPlotMesh);
+	CropMesh->SetupAttachment(DefaultSceneComponent);
 	
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
-	BoxComponent->SetupAttachment(CropPlotMesh);
+	BoxComponent->SetupAttachment(DefaultSceneComponent);
 }
 
 void ACropPlotActor::Tick(float DeltaSeconds)
@@ -26,46 +29,19 @@ void ACropPlotActor::Tick(float DeltaSeconds)
 void ACropPlotActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Plantable = true;
 	
-	constexpr int32 NumEnumValues = static_cast<int32>(ESeedType::Melon);
+	constexpr int32 NumEnumValues = static_cast<int32>(ECropType::Melon);
 	int32 RandomIndex = FMath::RandRange(0, NumEnumValues);
 
-	const ESeedType RandomSeedType =  static_cast<ESeedType>(RandomIndex);
-	PlantCrop(RandomSeedType);
+	const ECropType RandomSeedType =  static_cast<ECropType>(RandomIndex);
+	Plant(RandomSeedType);
 }
 
 bool ACropPlotActor::IsOccupied() const
 {
 	return Occupied;
-}
-
-void ACropPlotActor::PlantCrop(ESeedType CropSeedType)
-{
-	if(Occupied)
-	{
-		return;
-	}
-	
-	SeedType = CropSeedType;
-
-	if(UFarmingGameInstance* GameInstance = Cast<UFarmingGameInstance>(GetWorld()->GetGameInstance()))
-	{
-		CropMesh->SetStaticMesh(GameInstance->GetSeedMesh(SeedType));
-		GrowthState = DEFAULT_GROWTH_STAGE;
-		Occupied = true;
-	}
-}
-
-bool ACropPlotActor::HarvestCrop(OUT ESeedType OldSeedType)
-{
-	if(GrowthState >= 1.f)
-	{
-		return false;
-	}
-	
-	Occupied = false;
-	OldSeedType = SeedType;
-	return true;
 }
 
 void ACropPlotActor::UpdateGrowthState(float DeltaSeconds)
@@ -77,4 +53,102 @@ void ACropPlotActor::UpdateGrowthState(float DeltaSeconds)
 
 	GrowthState += GrowthRatePerMinute / 60 * DeltaSeconds;
 	CropMesh->SetWorldScale3D(FVector::One() * GrowthState);
+}
+
+void ACropPlotActor::EnterInteractionState()
+{
+	if(!CropMesh)
+	{
+		return;
+	}
+
+	if(Occupied)
+	{
+		if(GrowthState >= 1.f)
+		{
+			CropMesh->SetCustomDepthStencilValue(1);
+		}
+		else
+		{
+			CropMesh->SetCustomDepthStencilValue(2);
+		}
+
+		CropMesh->SetRenderCustomDepth(true);
+	}
+}
+
+void ACropPlotActor::ExitInteractionState()
+{
+	if(!CropMesh)
+	{
+		return;
+	}
+
+	if(Occupied)
+	{
+		CropMesh->SetRenderCustomDepth(false);
+	}
+}
+
+bool ACropPlotActor::Plant(ECropType NewCropType)
+{
+	if(Occupied || NewCropType == ECropType::None)
+	{
+		return false;
+	}
+	
+	CropType = NewCropType;
+
+	if(UFarmingGameInstance* GameInstance = Cast<UFarmingGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		CropMesh->SetStaticMesh(GameInstance->GetSeedMesh(CropType));
+		GrowthState = DEFAULT_GROWTH_STAGE;
+		Occupied = true;
+		Plantable = false;
+		return true;
+	}
+	
+	return false;
+}
+
+ECropType ACropPlotActor::Harvest()
+{
+	if(GrowthState < 1.f)
+	{
+		return ECropType::None;	
+	}
+	
+	Occupied = false;
+	CropMesh->SetStaticMesh(nullptr);
+	Plantable = true;
+	return CropType;
+}
+
+void ACropPlotActor::EnterPlantableState()
+{
+	if(!CropPlotMesh)
+	{
+		return;
+	}
+
+	if(!Occupied && Plantable)
+	{
+		CropPlotMesh->SetCustomDepthStencilValue(1);
+	}
+	else
+	{
+		CropPlotMesh->SetCustomDepthStencilValue(2);
+	}
+	
+	CropPlotMesh->SetRenderCustomDepth(true);
+}
+
+void ACropPlotActor::ExitPlantableState()
+{
+	if(!CropPlotMesh)
+    {
+    	return;
+    }
+	
+	CropPlotMesh->SetRenderCustomDepth(false);
 }

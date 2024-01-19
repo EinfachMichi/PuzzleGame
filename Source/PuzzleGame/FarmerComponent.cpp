@@ -1,6 +1,7 @@
 #include "FarmerComponent.h"
 
 #include "FarmingGameInstance.h"
+#include "Plantable.h"
 
 UFarmerComponent::UFarmerComponent()
 {
@@ -10,6 +11,13 @@ UFarmerComponent::UFarmerComponent()
 void UFarmerComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Initialize();
+}
+
+void UFarmerComponent::Initialize()
+{
+	PlayerComponent = GetOwner()->FindComponentByClass<UPlayerComponent>();
 }
 
 void UFarmerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -19,30 +27,38 @@ void UFarmerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	ManageBuildMode();
 }
 
-void UFarmerComponent::AddSeeds(ESeedType SeedType, int32 SeedCount)
+void UFarmerComponent::AddSeeds(ECropType CropType, int32 SeedCount)
 {
-	if(SeedInventory.Contains(SeedType))
+	if(CropSeedInventory.Contains(CropType))
 	{
-		SeedCount += SeedInventory[SeedType];
-		SeedInventory[SeedType] = SeedCount;
+		SeedCount += CropSeedInventory[CropType];
+		CropSeedInventory[CropType] = SeedCount;
 	}
-	SeedInventory.Add(SeedType, SeedCount);
+	CropSeedInventory.Add(CropType, SeedCount);
 
-	if(LogSeedInventory)
+	if(LogCropSeedInventory)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Seed: %s | Count: %i"), ESeedType_Loggable::FHelper::ToString(SeedType), SeedCount);
+		UE_LOG(LogTemp, Warning, TEXT("Seed: %s | Count: %i"), ECrop_Loggable::FHelper::ToString(CropType), SeedCount);
 	}
 }
 
 void UFarmerComponent::ToggleBuildMode()
 {
+	if(BuildMode)
+	{
+		if(IPlantable* CurrentPlantable = Cast<IPlantable>(CurrentLineTraceActor))
+		{
+			CurrentPlantable->ExitPlantableState();
+		}
+	}
+	
 	BuildMode = !BuildMode;
 	BuildModeChanged.Broadcast();
 }
 
-void UFarmerComponent::SetSeedType(ESeedType NewSeedType)
+void UFarmerComponent::SetSeedType(ECropType NewCropType)
 {
-	CurrentSeedType = NewSeedType;
+	CurrentCropType = NewCropType;
 }
 
 void UFarmerComponent::ManageBuildMode()
@@ -52,5 +68,27 @@ void UFarmerComponent::ManageBuildMode()
 		return;
 	}
 
+	CurrentLineTraceActor = PlayerComponent->GetHitResult().GetActor();
 	
+	if(IPlantable* CurrentPlantable = Cast<IPlantable>(CurrentLineTraceActor))
+	{
+		CurrentPlantable->EnterPlantableState();
+
+		if(IPlantable* OldInteractable = Cast<IPlantable>(OldLineTraceActor))
+		{
+			if(CurrentLineTraceActor != OldLineTraceActor)
+			{
+				OldInteractable->ExitPlantableState();
+			}
+		}
+	}
+	else
+	{
+		if(IPlantable* OldInteractable = Cast<IPlantable>(OldLineTraceActor))
+		{
+			OldInteractable->ExitPlantableState();
+		}
+	}
+	
+	OldLineTraceActor = CurrentLineTraceActor;
 }

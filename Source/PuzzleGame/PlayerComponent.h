@@ -31,6 +31,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Interaction")
 	void InteractWithActor();
 
+	FHitResult GetHitResult();
+	
 private:
 	void Initialize();
 	void ShootLineTrace();

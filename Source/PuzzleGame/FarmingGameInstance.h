@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ESeedType.h"
+#include "ECropType.h"
 #include "Engine/GameInstance.h"
 #include "FarmingGameInstance.generated.h"
 
@@ -12,8 +12,8 @@ class PUZZLEGAME_API UFarmingGameInstance : public UGameInstance
 
 public:
 	UPROPERTY(EditAnywhere, Category="Seeds")
-	TMap<ESeedType, UStaticMesh*> SeedActorMeshes;
+	TMap<ECropType, UStaticMesh*> SeedActorMeshes;
 
 public:
-	UStaticMesh* GetSeedMesh(ESeedType SeedType);
+	UStaticMesh* GetSeedMesh(ECropType SeedType);
 };

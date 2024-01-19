@@ -71,13 +71,13 @@ void UPlayerComponent::CheckForHitResultEvents()
 
 	if(IInteractable* CurrentInteractable = Cast<IInteractable>(CurrentLineTraceActor))
 	{
-		CurrentInteractable->SetInteractable(true);
+		CurrentInteractable->EnterInteractionState();
 
 		if(IInteractable* OldInteractable = Cast<IInteractable>(OldLineTraceActor))
 		{
 			if(CurrentLineTraceActor != OldLineTraceActor)
 			{
-				OldInteractable->SetInteractable(false);
+				OldInteractable->ExitInteractionState();
 			}
 		}
 	}
@@ -85,7 +85,7 @@ void UPlayerComponent::CheckForHitResultEvents()
 	{
 		if(IInteractable* OldInteractable = Cast<IInteractable>(OldLineTraceActor))
 		{
-			OldInteractable->SetInteractable(false);
+			OldInteractable->ExitInteractionState();
 		}
 	}
 	OldLineTraceActor = CurrentLineTraceActor;
@@ -102,4 +102,9 @@ void UPlayerComponent::InteractWithActor()
 	{
 		Interactable->Interact(Cast<APawn>(GetOwner()));
 	}
+}
+
+FHitResult UPlayerComponent::GetHitResult()
+{
+	return LineTraceHitResult;
 }

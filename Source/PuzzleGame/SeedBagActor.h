@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ESeedType.h"
+#include "ECropType.h"
 #include "ItemActor.h"
 #include "SeedBagActor.generated.h"
 
@@ -12,7 +12,7 @@ class PUZZLEGAME_API ASeedBagActor : public AItemActor
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Info")
-	ESeedType SeedType;
+	ECropType CropType;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Info")
 	int SeedCount;
