@@ -110,7 +110,7 @@ void UPlayerComponent::PickupItem(APickupableItem* Item)
 	}
 	
 	PickedUpItem = Item;
-	PickedUpOffset = FVector::Distance(CameraComponent->GetComponentLocation(), LineTraceHitResult.ImpactPoint);
+	PickedUpOffset = FVector::Distance(CameraComponent->GetComponentLocation(), LineTraceHitResult.GetComponent()->GetComponentLocation());
 	FVector HitLocation = CameraComponent->GetComponentLocation() + CameraComponent->GetForwardVector() * PickedUpOffset;
 	PhysicsHandle->GrabComponentAtLocationWithRotation(PickedUpItem->MeshComponent, NAME_None, HitLocation, FRotator::ZeroRotator);
 	PickedUpItem->MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);

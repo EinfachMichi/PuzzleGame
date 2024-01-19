@@ -41,6 +41,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	UBoxComponent* BoxComponent;
+	
 	bool Occupied;
 	
 public:	
