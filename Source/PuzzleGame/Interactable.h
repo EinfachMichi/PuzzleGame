@@ -19,6 +19,6 @@ protected:
 	
 public:
 	virtual void Interact(APawn* Pawn) {}
-	virtual void EnterInteractionState() {}
-	virtual void ExitInteractionState() {}
+	virtual void InInteractionRange() {}
+	virtual void OutOfInteractionRange() {}
 };

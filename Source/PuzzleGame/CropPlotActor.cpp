@@ -31,18 +31,19 @@ void ACropPlotActor::BeginPlay()
 	Super::BeginPlay();
 
 	Plantable = true;
-	
-	// constexpr int32 NumEnumValues = static_cast<int32>(ECropType::Melon);
-	// int32 RandomIndex = FMath::RandRange(0, NumEnumValues);
-	//
-	// const ECropType RandomSeedType =  static_cast<ECropType>(RandomIndex);
-	// Plant(RandomSeedType);
+	Harvestable = false;
 }
 
 void ACropPlotActor::UpdateGrowthState(float DeltaSeconds)
 {
-	if(GrowthState >= 1.f || !Occupied)
+	if(!Occupied)
 	{
+		return;
+	}
+	
+	if(GrowthState >= 1.f)
+	{
+		Harvestable = true;
 		return;
 	}
 
@@ -50,7 +51,7 @@ void ACropPlotActor::UpdateGrowthState(float DeltaSeconds)
 	CropMesh->SetWorldScale3D(FVector::One() * GrowthState);
 }
 
-void ACropPlotActor::EnterInteractionState()
+void ACropPlotActor::InInteractionRange()
 {
 	if(!CropMesh)
 	{
@@ -72,7 +73,7 @@ void ACropPlotActor::EnterInteractionState()
 	}
 }
 
-void ACropPlotActor::ExitInteractionState()
+void ACropPlotActor::OutOfInteractionRange()
 {
 	if(!CropMesh)
 	{
@@ -98,7 +99,7 @@ bool ACropPlotActor::Plant(ECropType NewCropType)
 	{
 		CropMesh->SetStaticMesh(GameInstance->GetSeedMesh(CropType));
 		GrowthRatePerMinute = GameInstance->GetGrowthRate(CropType);
-		GrowthState = DEFAULT_GROWTH_STAGE;
+		GrowthState = DEFAULT_GROWTH_STATE;
 		Occupied = true;
 		Plantable = false;
 		return true;
@@ -109,18 +110,19 @@ bool ACropPlotActor::Plant(ECropType NewCropType)
 
 ECropType ACropPlotActor::Harvest()
 {
-	if(GrowthState < 1.f)
+	if(!Harvestable)
 	{
 		return ECropType::None;	
 	}
 	
 	Occupied = false;
+	Harvestable = false;
 	CropMesh->SetStaticMesh(nullptr);
 	Plantable = true;
 	return CropType;
 }
 
-void ACropPlotActor::EnterPlantableState(bool HasEnoughSeeds)
+void ACropPlotActor::InPlantableRange(bool HasEnoughSeeds)
 {
 	if(!CropPlotMesh)
 	{
@@ -139,7 +141,7 @@ void ACropPlotActor::EnterPlantableState(bool HasEnoughSeeds)
 	CropPlotMesh->SetRenderCustomDepth(true);
 }
 
-void ACropPlotActor::ExitPlantableState()
+void ACropPlotActor::OutOfPlantableRange()
 {
 	if(!CropPlotMesh)
     {

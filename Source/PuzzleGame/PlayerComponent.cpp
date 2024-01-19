@@ -71,13 +71,13 @@ void UPlayerComponent::CheckForHitResultEvents()
 
 	if(IInteractable* CurrentInteractable = Cast<IInteractable>(CurrentLineTraceActor))
 	{
-		CurrentInteractable->EnterInteractionState();
+		CurrentInteractable->InInteractionRange();
 
 		if(IInteractable* OldInteractable = Cast<IInteractable>(OldLineTraceActor))
 		{
 			if(CurrentLineTraceActor != OldLineTraceActor)
 			{
-				OldInteractable->ExitInteractionState();
+				OldInteractable->OutOfInteractionRange();
 			}
 		}
 	}
@@ -85,7 +85,7 @@ void UPlayerComponent::CheckForHitResultEvents()
 	{
 		if(IInteractable* OldInteractable = Cast<IInteractable>(OldLineTraceActor))
 		{
-			OldInteractable->ExitInteractionState();
+			OldInteractable->OutOfInteractionRange();
 		}
 	}
 	OldLineTraceActor = CurrentLineTraceActor;

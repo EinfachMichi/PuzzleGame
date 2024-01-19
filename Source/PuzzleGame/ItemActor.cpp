@@ -8,7 +8,7 @@ void AItemActor::BeginPlay()
 }
 
 
-void AItemActor::EnterInteractionState()
+void AItemActor::InInteractionRange()
 {
 	if(!MeshComponent)
 	{
@@ -27,7 +27,7 @@ void AItemActor::EnterInteractionState()
 	MeshComponent->SetRenderCustomDepth(true);
 }
 
-void AItemActor::ExitInteractionState()
+void AItemActor::OutOfInteractionRange()
 {
 	if(!MeshComponent)
 	{

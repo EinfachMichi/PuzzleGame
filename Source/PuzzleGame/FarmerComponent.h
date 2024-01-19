@@ -7,7 +7,7 @@
 #include "FarmerComponent.generated.h"
 
 UDELEGATE()
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBuildModeChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlantModeChanged);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PUZZLEGAME_API UFarmerComponent : public UActorComponent
@@ -18,14 +18,14 @@ public:
 	UPROPERTY(EditAnywhere, Category="Debug")
 	bool LogCropSeedInventory;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Crops")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Farming")
 	TMap<ECropType, int32> CropSeedInventory;
 
-	UPROPERTY(BlueprintAssignable, Category="Building")
-	FBuildModeChanged BuildModeChanged;
+	UPROPERTY(BlueprintAssignable, Category="Farming")
+	FPlantModeChanged PlantModeChanged;
 
-	UPROPERTY(BlueprintReadOnly, Category="Building")
-	bool BuildMode;
+	UPROPERTY(BlueprintReadOnly, Category="Farming")
+	bool PlantMode;
 
 private:
 	ECropType CurrentCropType;
@@ -40,19 +40,21 @@ public:
 
 	void AddSeeds(ECropType CropType, int32 SeedCount);
 
-	UFUNCTION(BlueprintCallable, Category="Building")
-	void ToggleBuildMode();
+	UFUNCTION(BlueprintCallable, Category="Farming")
+	void TogglePlantMode();
 
-	UFUNCTION(BlueprintCallable, Category="Building")
+	UFUNCTION(BlueprintCallable, Category="Farming")
 	void SetSeedType(ECropType NewCropType);
 
-	UFUNCTION(BlueprintCallable, Category="Building")
+	UFUNCTION(BlueprintCallable, Category="Farming")
 	bool TryPlantSeed();
 
+	UFUNCTION(BlueprintCallable, Category="Farming")
+	bool TryHarvestCrop();
+	
 private:
-	// This method is called in tick
-	void ManageBuildMode();
 	void Initialize();
+	void ManagePlantMode();
 	
 protected:
 	virtual void BeginPlay() override;

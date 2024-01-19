@@ -24,7 +24,7 @@ void UFarmerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	ManageBuildMode();
+	ManagePlantMode();
 }
 
 void UFarmerComponent::AddSeeds(ECropType CropType, int32 SeedCount)
@@ -43,18 +43,18 @@ void UFarmerComponent::AddSeeds(ECropType CropType, int32 SeedCount)
 	}
 }
 
-void UFarmerComponent::ToggleBuildMode()
+void UFarmerComponent::TogglePlantMode()
 {
-	if(BuildMode)
+	if(PlantMode)
 	{
 		if(IPlantable* CurrentPlantable = Cast<IPlantable>(CurrentLineTraceActor))
 		{
-			CurrentPlantable->ExitPlantableState();
+			CurrentPlantable->OutOfPlantableRange();
 		}
 	}
 	
-	BuildMode = !BuildMode;
-	BuildModeChanged.Broadcast();
+	PlantMode = !PlantMode;
+	PlantModeChanged.Broadcast();
 }
 
 void UFarmerComponent::SetSeedType(ECropType NewCropType)
@@ -62,9 +62,9 @@ void UFarmerComponent::SetSeedType(ECropType NewCropType)
 	CurrentCropType = NewCropType;
 }
 
-void UFarmerComponent::ManageBuildMode()
+void UFarmerComponent::ManagePlantMode()
 {
-	if(!BuildMode)
+	if(!PlantMode)
 	{
 		return;
 	}
@@ -73,13 +73,13 @@ void UFarmerComponent::ManageBuildMode()
 	
 	if(IPlantable* CurrentPlantable = Cast<IPlantable>(CurrentLineTraceActor))
 	{
-		CurrentPlantable->EnterPlantableState(CurrentCropType != ECropType::None);
+		CurrentPlantable->InPlantableRange(CurrentCropType != ECropType::None);
 
 		if(IPlantable* OldInteractable = Cast<IPlantable>(OldLineTraceActor))
 		{
 			if(CurrentLineTraceActor != OldLineTraceActor)
 			{
-				OldInteractable->ExitPlantableState();
+				OldInteractable->OutOfPlantableRange();
 			}
 		}
 	}
@@ -87,16 +87,37 @@ void UFarmerComponent::ManageBuildMode()
 	{
 		if(IPlantable* OldInteractable = Cast<IPlantable>(OldLineTraceActor))
 		{
-			OldInteractable->ExitPlantableState();
+			OldInteractable->OutOfPlantableRange();
 		}
 	}
 	
 	OldLineTraceActor = CurrentLineTraceActor;
 }
 
+bool UFarmerComponent::TryHarvestCrop()
+{
+	if(PlantMode)
+	{
+		return false;
+	}
+
+	CurrentLineTraceActor = PlayerComponent->GetHitResult().GetActor();
+	
+	if(IPlantable* Plantable = Cast<IPlantable>(CurrentLineTraceActor))
+	{
+		ECropType HarvestedCropType = Plantable->Harvest();
+		if(HarvestedCropType != ECropType::None)
+		{
+			//TODO: pickup logic
+			return true;
+		}
+	}
+	return false;
+}
+
 bool UFarmerComponent::TryPlantSeed()
 {
-	if(!BuildMode || CurrentCropType == ECropType::None)
+	if(!PlantMode || CurrentCropType == ECropType::None)
 	{
 		return false;
 	}

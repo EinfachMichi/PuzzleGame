@@ -14,8 +14,8 @@ public:
 	UStaticMeshComponent* MeshComponent;
 	
 public:
-	virtual void EnterInteractionState() override;
-	virtual void ExitInteractionState() override;
+	virtual void InInteractionRange() override;
+	virtual void OutOfInteractionRange() override;
 
 private:
 	void Initialize();

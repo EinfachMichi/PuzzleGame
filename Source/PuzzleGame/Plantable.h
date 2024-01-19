@@ -17,10 +17,11 @@ class PUZZLEGAME_API IPlantable
 
 protected:
 	bool Plantable;
+	bool Harvestable;
 	
 public:
 	virtual bool Plant(ECropType CropType) { return false; }
 	virtual ECropType Harvest() { return ECropType::None; }
-	virtual void EnterPlantableState(bool HasEnoughSeeds) {}
-	virtual void ExitPlantableState() {}
+	virtual void InPlantableRange(bool HasEnoughSeeds) {}
+	virtual void OutOfPlantableRange() {}
 };

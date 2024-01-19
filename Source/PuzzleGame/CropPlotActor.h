@@ -8,7 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "CropPlotActor.generated.h"
 
-constexpr float DEFAULT_GROWTH_STAGE = 0.01f;
+constexpr float DEFAULT_GROWTH_STATE = 0.01f;
 
 UCLASS()
 class PUZZLEGAME_API ACropPlotActor : public AActor, public IInteractable, public IPlantable
@@ -20,7 +20,7 @@ public:
 	float GrowthRatePerMinute = 1.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Crops")
-	float GrowthState = 0.01f;
+	float GrowthState = DEFAULT_GROWTH_STATE;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Crops")
 	ECropType CropType;
@@ -49,11 +49,11 @@ private:
 	
 protected:
 	virtual void BeginPlay() override;
-	virtual void EnterInteractionState() override;
-	virtual void ExitInteractionState() override;
+	virtual void InInteractionRange() override;
+	virtual void OutOfInteractionRange() override;
 	
 	virtual bool Plant(ECropType NewCropType) override;
 	virtual ECropType Harvest() override;
-	virtual void EnterPlantableState(bool HasEnoughSeeds) override;
-	virtual void ExitPlantableState() override;
+	virtual void InPlantableRange(bool HasEnoughSeeds) override;
+	virtual void OutOfPlantableRange() override;
 };
