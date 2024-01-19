@@ -2,18 +2,30 @@
 
 UStaticMesh* UFarmingGameInstance::GetSeedMesh(ECropType CropType)
 {
-	if(CropActorMeshes.Contains(CropType))
+	if(CropInfos.Contains(CropType))
 	{
-		return CropActorMeshes[CropType];
+		FCropInfo CropInfo = CropInfos[CropType];
+		return CropInfo.StaticMesh;
 	}
 	return nullptr;
 }
 
 float UFarmingGameInstance::GetGrowthRate(ECropType CropType)
 {
-	if(CropGrowthRates.Contains(CropType))
+	if(CropInfos.Contains(CropType))
 	{
-		return CropGrowthRates[CropType];
+		FCropInfo CropInfo = CropInfos[CropType];
+		return CropInfo.GrowthRatePerMinute;
+	}
+	return -1;
+}
+
+float UFarmingGameInstance::GetMass(ECropType CropType)
+{
+	if(CropInfos.Contains(CropType))
+	{
+		FCropInfo CropInfo = CropInfos[CropType];
+		return CropInfo.Mass;
 	}
 	return -1;
 }

@@ -104,6 +104,51 @@ void UPlayerComponent::InteractWithActor()
 	}
 }
 
+void UPlayerComponent::PickupActor(AActor* Actor)
+{
+	PickedUpActor = Actor;
+	PickedUpOffset = FVector::Distance(CameraComponent->GetComponentLocation(), LineTraceHitResult.ImpactPoint);
+}
+
+bool UPlayerComponent::TryPickUpActor()
+{
+	if(!PickedUpActor)
+	{
+		return false;
+	}
+
+	if(UStaticMeshComponent* PickedUpActorStaticMeshComponent = PickedUpActor->FindComponentByClass<UStaticMeshComponent>())
+	{
+		if(PickedUpActorStaticMeshComponent->IsSimulatingPhysics())
+		{
+			PickedUpActorStaticMeshComponent->SetSimulatePhysics(false);
+		}
+	}
+
+	FVector NewLocation = CameraComponent->GetComponentLocation() + CameraComponent->GetForwardVector() * PickedUpOffset;
+	PickedUpActor->SetActorLocation(NewLocation);
+	return true;
+}
+
+bool UPlayerComponent::TryReleasePickuedUpActor()
+{
+	if(!PickedUpActor)
+	{
+		return false;
+	}
+
+	if(UStaticMeshComponent* PickedUpActorStaticMeshComponent = PickedUpActor->FindComponentByClass<UStaticMeshComponent>())
+	{
+		if(!PickedUpActorStaticMeshComponent->IsSimulatingPhysics())
+		{
+			PickedUpActorStaticMeshComponent->SetSimulatePhysics(true);
+		}
+	}
+
+	PickedUpActor = nullptr;
+	return true;
+}
+
 FHitResult UPlayerComponent::GetHitResult()
 {
 	return LineTraceHitResult;

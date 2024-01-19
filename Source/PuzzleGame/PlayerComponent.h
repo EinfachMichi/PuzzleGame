@@ -22,6 +22,8 @@ private:
 	FHitResult LineTraceHitResult;
 	AActor* CurrentLineTraceActor;
 	AActor* OldLineTraceActor;
+	AActor* PickedUpActor;
+	float PickedUpOffset;
 	
 public:	
 	UPlayerComponent();
@@ -31,6 +33,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Interaction")
 	void InteractWithActor();
 
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	bool TryPickUpActor();
+
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	bool TryReleasePickuedUpActor();
+	
+	void PickupActor(AActor* Actor);
 	FHitResult GetHitResult();
 	
 private:

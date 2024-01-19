@@ -1,5 +1,6 @@
 #include "CropPlotActor.h"
 
+#include "CropActor.h"
 #include "FarmingGameInstance.h"
 
 ACropPlotActor::ACropPlotActor()
@@ -108,18 +109,26 @@ bool ACropPlotActor::Plant(ECropType NewCropType)
 	return false;
 }
 
-ECropType ACropPlotActor::Harvest()
+ACropActor* ACropPlotActor::Harvest()
 {
 	if(!Harvestable)
 	{
-		return ECropType::None;	
+		return nullptr;	
 	}
+
+	FVector CropActorLocation = GetActorLocation() + CropMesh->GetRelativeLocation();
+	FRotator CropActorRotation = GetActorRotation() + CropMesh->GetRelativeRotation();
+	AActor* CropActor = GetWorld()->SpawnActor<AActor>(ACropActor::StaticClass(), CropActorLocation, CropActorRotation);
+
+	ACropActor* FinalCropActor = Cast<ACropActor>(CropActor);
+	FinalCropActor->SetStaticMesh(CropMesh->GetStaticMesh());
 	
 	Occupied = false;
 	Harvestable = false;
 	CropMesh->SetStaticMesh(nullptr);
 	Plantable = true;
-	return CropType;
+	
+	return FinalCropActor;
 }
 
 void ACropPlotActor::InPlantableRange(bool HasEnoughSeeds)

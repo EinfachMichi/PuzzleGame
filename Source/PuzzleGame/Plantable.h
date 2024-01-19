@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CropActor.h"
 #include "ECropType.h"
 #include "UObject/Interface.h"
 #include "Plantable.generated.h"
@@ -21,7 +22,7 @@ protected:
 	
 public:
 	virtual bool Plant(ECropType CropType) { return false; }
-	virtual ECropType Harvest() { return ECropType::None; }
+	virtual ACropActor* Harvest() { return nullptr; }
 	virtual void InPlantableRange(bool HasEnoughSeeds) {}
 	virtual void OutOfPlantableRange() {}
 };

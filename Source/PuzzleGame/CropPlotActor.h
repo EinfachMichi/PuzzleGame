@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CropActor.h"
 #include "ECropType.h"
 #include "Interactable.h"
 #include "Plantable.h"
@@ -53,7 +54,7 @@ protected:
 	virtual void OutOfInteractionRange() override;
 	
 	virtual bool Plant(ECropType NewCropType) override;
-	virtual ECropType Harvest() override;
+	virtual ACropActor* Harvest() override;
 	virtual void InPlantableRange(bool HasEnoughSeeds) override;
 	virtual void OutOfPlantableRange() override;
 };

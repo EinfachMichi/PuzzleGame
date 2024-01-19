@@ -105,10 +105,10 @@ bool UFarmerComponent::TryHarvestCrop()
 	
 	if(IPlantable* Plantable = Cast<IPlantable>(CurrentLineTraceActor))
 	{
-		ECropType HarvestedCropType = Plantable->Harvest();
-		if(HarvestedCropType != ECropType::None)
+		ACropActor* CropActor = Plantable->Harvest();
+		if(CropActor)
 		{
-			//TODO: pickup logic
+			PlayerComponent->PickupActor(CropActor);
 			return true;
 		}
 	}
