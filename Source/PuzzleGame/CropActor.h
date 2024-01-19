@@ -22,5 +22,5 @@ protected:
 
 public:
 	void SetStaticMesh(UStaticMesh* StaticMesh);
-	
+	UStaticMeshComponent* GetStaticMeshComponent();
 };

@@ -15,7 +15,7 @@ void ACropActor::Interact(APawn* Pawn)
 {
 	if(UPlayerComponent* PlayerComponent = Pawn->FindComponentByClass<UPlayerComponent>())
 	{
-		PlayerComponent->PickupActor(this);
+		PlayerComponent->PickupActor(StaticMeshComponent);
 	}
 }
 
@@ -28,6 +28,7 @@ void ACropActor::InInteractionRange()
 
 	StaticMeshComponent->SetRenderCustomDepth(true);
 	StaticMeshComponent->SetCustomDepthStencilValue(3);
+	StaticMeshComponent->SetSimulatePhysics(true);
 }
 
 void ACropActor::OutOfInteractionRange()
@@ -48,4 +49,9 @@ void ACropActor::SetStaticMesh(UStaticMesh* StaticMesh)
 	}
 
 	StaticMeshComponent->SetStaticMesh(StaticMesh);
+}
+
+UStaticMeshComponent* ACropActor::GetStaticMeshComponent()
+{
+	return StaticMeshComponent;
 }

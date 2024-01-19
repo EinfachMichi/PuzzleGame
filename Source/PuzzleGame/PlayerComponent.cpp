@@ -14,17 +14,18 @@ void UPlayerComponent::BeginPlay()
 	Initialize();
 }
 
+void UPlayerComponent::Initialize()
+{
+	CameraComponent = GetOwner()->FindComponentByClass<UCameraComponent>();
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+}
+
 void UPlayerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	ShootLineTrace();
 	CheckForHitResultEvents();
-}
-
-void UPlayerComponent::Initialize()
-{
-	CameraComponent = GetOwner()->FindComponentByClass<UCameraComponent>();
 }
 
 void UPlayerComponent::ShootLineTrace()
@@ -104,44 +105,56 @@ void UPlayerComponent::InteractWithActor()
 	}
 }
 
-void UPlayerComponent::PickupActor(AActor* Actor)
+void UPlayerComponent::PickupActor(UPrimitiveComponent* Component)
 {
-	PickedUpActor = Actor;
+	if(!PhysicsHandle)
+	{
+		return;
+	}
+	
+	PickedUpActor = Component->GetOwner();
 	PickedUpOffset = FVector::Distance(CameraComponent->GetComponentLocation(), LineTraceHitResult.ImpactPoint);
+	FVector HitLocation = CameraComponent->GetComponentLocation() + CameraComponent->GetForwardVector() * PickedUpOffset;
+	PhysicsHandle->GrabComponentAtLocationWithRotation(Component, NAME_None, HitLocation, FRotator::ZeroRotator);
 }
 
 bool UPlayerComponent::TryPickUpActor()
 {
-	if(!PickedUpActor)
+	if(!PickedUpActor || !PhysicsHandle)
 	{
 		return false;
 	}
 
-	if(UStaticMeshComponent* PickedUpActorStaticMeshComponent = PickedUpActor->FindComponentByClass<UStaticMeshComponent>())
+	if(!PhysicsHandle->GrabbedComponent)
 	{
-		if(PickedUpActorStaticMeshComponent->IsSimulatingPhysics())
-		{
-			PickedUpActorStaticMeshComponent->SetSimulatePhysics(false);
-		}
+		return false;
 	}
 
 	FVector NewLocation = CameraComponent->GetComponentLocation() + CameraComponent->GetForwardVector() * PickedUpOffset;
-	PickedUpActor->SetActorLocation(NewLocation);
+	PhysicsHandle->SetTargetLocation(NewLocation);
 	return true;
 }
 
 bool UPlayerComponent::TryReleasePickuedUpActor()
 {
-	if(!PickedUpActor)
+	if(!PickedUpActor || !PhysicsHandle)
 	{
 		return false;
 	}
 
+	if(!PhysicsHandle->GrabbedComponent)
+	{
+		return false;
+	}
+	
+	PhysicsHandle->ReleaseComponent();
+
 	if(UStaticMeshComponent* PickedUpActorStaticMeshComponent = PickedUpActor->FindComponentByClass<UStaticMeshComponent>())
 	{
-		if(!PickedUpActorStaticMeshComponent->IsSimulatingPhysics())
+		if(PickedUpActorStaticMeshComponent->IsSimulatingPhysics())
 		{
-			PickedUpActorStaticMeshComponent->SetSimulatePhysics(true);
+			PickedUpActorStaticMeshComponent->SetPhysicsLinearVelocity(
+				PickedUpActorStaticMeshComponent->GetPhysicsLinearVelocity() * 0.2f);
 		}
 	}
 

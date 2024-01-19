@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ActorComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PlayerComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -24,6 +25,7 @@ private:
 	AActor* OldLineTraceActor;
 	AActor* PickedUpActor;
 	float PickedUpOffset;
+	UPhysicsHandleComponent* PhysicsHandle;
 	
 public:	
 	UPlayerComponent();
@@ -39,7 +41,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Interaction")
 	bool TryReleasePickuedUpActor();
 	
-	void PickupActor(AActor* Actor);
+	void PickupActor(UPrimitiveComponent* Component);
 	FHitResult GetHitResult();
 	
 private:

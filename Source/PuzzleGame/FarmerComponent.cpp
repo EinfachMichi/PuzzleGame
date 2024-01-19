@@ -108,8 +108,11 @@ bool UFarmerComponent::TryHarvestCrop()
 		ACropActor* CropActor = Plantable->Harvest();
 		if(CropActor)
 		{
-			PlayerComponent->PickupActor(CropActor);
-			return true;
+			if(UStaticMeshComponent* MeshComponent = CropActor->GetStaticMeshComponent())
+			{
+				PlayerComponent->PickupActor(MeshComponent);
+				return true;
+			}
 		}
 	}
 	return false;
