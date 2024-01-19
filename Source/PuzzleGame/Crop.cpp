@@ -12,6 +12,8 @@ void ACrop::BeginPlay()
 	MeshComponent = FindComponentByClass<UStaticMeshComponent>();
 	MeshComponent->SetMobility(EComponentMobility::Movable);
 	MeshComponent->SetCollisionResponseToChannel(CollisionChannel, CollisionResponse);
+	MeshComponent->SetCollisionObjectType(ECC_PhysicsBody);
+	MeshComponent->SetGenerateOverlapEvents(true);
 }
 
 void ACrop::SetStaticMesh(UStaticMesh* StaticMesh)
