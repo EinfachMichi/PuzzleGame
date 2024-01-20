@@ -2,6 +2,7 @@
 
 #include "Crop.h"
 #include "FarmingGameMode.h"
+#include "Components/AudioComponent.h"
 
 ACropPlot::ACropPlot()
 {
@@ -30,6 +31,9 @@ void ACropPlot::Tick(float DeltaSeconds)
 void ACropPlot::BeginPlay()
 {
 	Super::BeginPlay();
+
+	NiagaraHarvestEffect = FindComponentByTag<UActorComponent>("Effect");
+	HarvestSoundAudioComponent = FindComponentByClass<UAudioComponent>();
 }
 
 void ACropPlot::UpdateGrowthState(float DeltaSeconds)
@@ -129,6 +133,26 @@ ACrop* ACropPlot::Harvest()
 	
 	Occupied = false;
 	CropMesh->SetStaticMesh(nullptr);
+
+	if(NiagaraHarvestEffect)
+	{
+		NiagaraHarvestEffect->Activate(true);
+	}
+
+	if(HarvestSoundAudioComponent)
+	{
+		if(Crop->IsBig())
+		{
+			HarvestSoundAudioComponent->SetSound(BigCropSound);	
+		}
+		else
+		{
+			HarvestSoundAudioComponent->SetSound(SmallCropSound);	
+		}
+		
+		HarvestSoundAudioComponent->Play();
+	}
+	
 	return Crop;
 }
 

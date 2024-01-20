@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Audio.h"
 #include "CoreMinimal.h"
 #include "Crop.h"
 #include "ECropType.h"
@@ -41,6 +42,16 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	UBoxComponent* BoxComponent;
+
+	UPROPERTY(EditAnywhere, Category="Audio")
+	USoundWave* SmallCropSound;
+
+	UPROPERTY(EditAnywhere, Category="Audio")
+	USoundWave* BigCropSound;
+	
+	UActorComponent* NiagaraHarvestEffect;
+
+	UAudioComponent* HarvestSoundAudioComponent;
 	
 	bool Occupied;
 	

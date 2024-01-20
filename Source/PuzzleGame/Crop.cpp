@@ -52,3 +52,13 @@ ECropType ACrop::GetCropType()
 {
 	return CropType;
 }
+
+bool ACrop::IsBig()
+{
+	if(CropType == ECropType::Melon
+		|| CropType == ECropType::Pumpkin)
+	{
+		return true;
+	}
+	return false;
+}

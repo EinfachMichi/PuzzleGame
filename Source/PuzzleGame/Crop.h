@@ -26,4 +26,6 @@ public:
 
 	void SetCropType(ECropType NewCropType);
 	ECropType GetCropType();
+
+	bool IsBig();
 };
