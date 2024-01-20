@@ -1,7 +1,7 @@
 #include "CropPlot.h"
 
 #include "Crop.h"
-#include "FarmingGameInstance.h"
+#include "FarmingGameMode.h"
 
 ACropPlot::ACropPlot()
 {
@@ -99,12 +99,12 @@ bool ACropPlot::Plant(ECropType NewCropType)
 	
 	CropType = NewCropType;
 
-	if(UFarmingGameInstance* GameInstance = Cast<UFarmingGameInstance>(GetWorld()->GetGameInstance()))
+	if(AFarmingGameMode* GameMode = Cast<AFarmingGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		CropMesh->SetStaticMesh(GameInstance->GetSeedMesh(CropType));
-		GrowthRatePerMinute = GameInstance->GetGrowthRate(CropType);
+		CropMesh->SetStaticMesh(GameMode->GetSeedMesh(CropType));
+		GrowthRatePerMinute = GameMode->GetGrowthRate(CropType);
 		GrowthState = DEFAULT_GROWTH_STATE;
-		CropMass = GameInstance->GetMass(CropType);
+		CropMass = GameMode->GetMass(CropType);
 		Occupied = true;
 		return true;
 	}
