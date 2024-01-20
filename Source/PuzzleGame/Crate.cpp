@@ -28,14 +28,8 @@ void ACrate::OnPickedUp()
 		if(ACrop* Crop = Cast<ACrop>(Actor))
 		{
 			UStaticMeshComponent* CropMesh = Crop->GetStaticMeshComponent();
-			if(CropMesh->IsSimulatingPhysics())
-			{
-				if(CropMesh->GetPhysicsLinearVelocity().Length() <= VelocityThreshold)
-				{
-					CropMesh->SetSimulatePhysics(false);
-					CropMesh->AttachToComponent(DefaultSceneComponent, FAttachmentTransformRules::KeepWorldTransform);
-				}
-			}
+			CropMesh->SetSimulatePhysics(false);
+			CropMesh->AttachToComponent(DefaultSceneComponent, FAttachmentTransformRules::KeepWorldTransform);
 		}
 	}
 }

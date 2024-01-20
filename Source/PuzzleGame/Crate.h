@@ -12,9 +12,6 @@ class PUZZLEGAME_API ACrate : public APickupableItem
 
 public:
 	ACrate();
-
-	UPROPERTY(EditAnywhere, Category="Physics")
-	float VelocityThreshold = 1.f;
 	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
