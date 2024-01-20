@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "ECropType.h"
+#include "FCropSeedInfo.h"
 #include "PlayerComponent.h"
 #include "Components/ActorComponent.h"
 #include "FarmerComponent.generated.h"
@@ -19,7 +20,7 @@ public:
 	bool LogCropSeedInventory;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Farming")
-	TMap<ECropType, int32> CropSeedInventory;
+	TArray<FCropSeedInfo> CropSeedInventory;
 
 	UPROPERTY(BlueprintAssignable, Category="Farming")
 	FPlantModeChanged PlantModeChanged;
@@ -28,7 +29,7 @@ public:
 	bool PlantMode;
 
 private:
-	ECropType CurrentCropTypeEquipped;
+	int CurrentCropSeedIndex;
 	UPlayerComponent* PlayerComponent;
 	AActor* CurrentLineTraceActor;
 	AActor* OldLineTraceActor;
@@ -38,19 +39,22 @@ public:
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void AddSeeds(ECropType CropType, int32 SeedCount);
+	void AddSeeds(ECropType CropType, int SeedCount);
 
 	UFUNCTION(BlueprintCallable, Category="Farming")
 	void TogglePlantMode();
-
-	UFUNCTION(BlueprintCallable, Category="Farming")
-	void SetSeedType(ECropType NewCropType);
 
 	UFUNCTION(BlueprintCallable, Category="Farming")
 	void PlantSeed();
 
 	UFUNCTION(BlueprintCallable, Category="Farming")
 	void HarvestCrop();
+
+	UFUNCTION(BlueprintCallable, Category="Farming")
+	int CycleThroughSeedInventory(float Direction);
+
+	UFUNCTION(BlueprintCallable, Category="Farming")
+	FCropSeedInfo GetSeedInfo(int Index);
 	
 private:
 	void ManagePlantMode();

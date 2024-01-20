@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "ECropType.h"
-#include "FCropInfo.h"
+#include "FCropActorInfo.h"
 #include "Engine/GameInstance.h"
 #include "FarmingGameInstance.generated.h"
 
@@ -13,7 +13,7 @@ class PUZZLEGAME_API UFarmingGameInstance : public UGameInstance
 
 public:
 	UPROPERTY(EditAnywhere, Category="Farming")
-	TMap<ECropType, FCropInfo> CropInfos;
+	TMap<ECropType, FCropActorInfo> CropInfos;
 
 public:
 	UStaticMesh* GetSeedMesh(ECropType CropType);
