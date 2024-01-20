@@ -14,6 +14,8 @@ void ACrop::BeginPlay()
 	MeshComponent->SetCollisionResponseToChannel(CollisionChannel, CollisionResponse);
 	MeshComponent->SetCollisionObjectType(ECC_PhysicsBody);
 	MeshComponent->SetGenerateOverlapEvents(true);
+
+	Mass = MeshComponent->GetMass();
 }
 
 void ACrop::SetStaticMesh(UStaticMesh* StaticMesh)
@@ -31,19 +33,14 @@ UStaticMeshComponent* ACrop::GetStaticMeshComponent()
 	return MeshComponent;
 }
 
-void ACrop::SetMass(float Mass)
+void ACrop::SetMass(float NewMass)
 {
-	if(!MeshComponent)
-	{
-		return;
-	}
-
-	MeshComponent->SetMassOverrideInKg(NAME_None, Mass, true);
+	Mass = NewMass;
 }
 
 float ACrop::GetMass()
 {
-	return MeshComponent->GetMass();
+	return Mass;
 }
 
 void ACrop::SetCropType(ECropType NewCropType)

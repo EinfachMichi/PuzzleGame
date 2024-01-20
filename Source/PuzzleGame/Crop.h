@@ -12,6 +12,7 @@ class PUZZLEGAME_API ACrop : public APickupableItem
 
 private:
 	ECropType CropType;
+	float Mass;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -20,7 +21,7 @@ public:
 	void SetStaticMesh(UStaticMesh* StaticMesh);
 	UStaticMeshComponent* GetStaticMeshComponent();
 	
-	void SetMass(float Mass);
+	void SetMass(float NewMass);
 	float GetMass();
 
 	void SetCropType(ECropType NewCropType);

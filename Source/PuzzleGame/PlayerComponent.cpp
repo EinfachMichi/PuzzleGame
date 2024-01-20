@@ -110,10 +110,11 @@ void UPlayerComponent::PickupItem(APickupableItem* Item)
 	}
 	
 	PickedUpItem = Item;
+	PickedUpItemRotation = FRotator::ZeroRotator;
 	PickedUpOffset = FVector::Distance(CameraComponent->GetComponentLocation(), LineTraceHitResult.GetComponent()->GetComponentLocation());
-	FVector HitLocation = CameraComponent->GetComponentLocation() + CameraComponent->GetForwardVector() * PickedUpOffset;
-	PhysicsHandle->GrabComponentAtLocationWithRotation(PickedUpItem->MeshComponent, NAME_None, HitLocation, FRotator::ZeroRotator);
-	PickedUpItem->MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	FVector HitLocation = LineTraceHitResult.GetComponent()->GetComponentLocation();
+	PhysicsHandle->GrabComponentAtLocationWithRotation(PickedUpItem->MeshComponent, NAME_None, HitLocation, PickedUpItemRotation);
+	PickedUpItem->MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);;
 	PickedUpItem->OnPickedUp();
 }
 
@@ -142,7 +143,7 @@ void UPlayerComponent::PickingUpItem()
 	}
 	
 	FVector NewLocation = CameraComponent->GetComponentLocation() + CameraComponent->GetForwardVector() * PickedUpOffset;
-	PhysicsHandle->SetTargetLocation(NewLocation);
+	PhysicsHandle->SetTargetLocationAndRotation(NewLocation, PickedUpItemRotation);
 }
 
 void UPlayerComponent::ReleaseItem()
@@ -164,6 +165,19 @@ void UPlayerComponent::ReleaseItem()
 	PickedUpItem->OnReleased();
 	
 	PickedUpItem = nullptr;
+}
+
+void UPlayerComponent::RotatePickedUpItem(float Direction)
+{
+	if (!PickedUpItem)
+	{
+		return;
+	}
+		
+	FRotator RotationDelta(0.0f, Direction, 0.0f);
+	FRotator NewRotation = PickedUpItemRotation + RotationDelta * RotationSpeed * GetWorld()->GetDeltaSeconds();
+	
+	PickedUpItemRotation = NewRotation;
 }
 
 FHitResult UPlayerComponent::GetHitResult()

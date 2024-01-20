@@ -19,6 +19,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="Line Tracing")
 	bool DebugLineTrace;
 
+	UPROPERTY(EditAnywhere, Category="PickedUp")
+	float RotationSpeed = 10.f;
+
 private:
 	UCameraComponent* CameraComponent;
 	FHitResult LineTraceHitResult;
@@ -26,6 +29,7 @@ private:
 	AActor* OldLineTraceActor;
 	APickupableItem* PickedUpItem;
 	float PickedUpOffset;
+	FRotator PickedUpItemRotation;
 	UPhysicsHandleComponent* PhysicsHandle;
 	
 public:	
@@ -41,6 +45,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Interaction")
 	void ReleaseItem();
+
+	UFUNCTION(BlueprintCallable, Category="PickedUp")
+	void RotatePickedUpItem(float Direction);
 	
 	void PickupItem(APickupableItem* Item);
 	FHitResult GetHitResult();
