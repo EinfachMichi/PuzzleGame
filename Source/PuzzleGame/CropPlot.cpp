@@ -149,7 +149,8 @@ ACrop* ACropPlot::Harvest()
 		{
 			HarvestSoundAudioComponent->SetSound(SmallCropSound);	
 		}
-		
+
+		OnCropHarvest.Broadcast();
 		HarvestSoundAudioComponent->Play();
 	}
 	

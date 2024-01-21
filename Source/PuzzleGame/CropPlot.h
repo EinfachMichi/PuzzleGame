@@ -12,6 +12,9 @@
 
 constexpr float DEFAULT_GROWTH_STATE = 0.01f;
 
+UDELEGATE()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCropHarvest);
+
 UCLASS()
 class PUZZLEGAME_API ACropPlot : public AActor, public IOutlineable, public IInteractable
 {
@@ -29,6 +32,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Farming")
 	float CropMass;
+
+	UPROPERTY(BlueprintAssignable, Category="Farming")
+	FOnCropHarvest OnCropHarvest;
 	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
