@@ -2,7 +2,7 @@
 
 #include "Crop.h"
 #include "FarmingGameMode.h"
-#include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ACropPlot::ACropPlot()
 {
@@ -33,7 +33,6 @@ void ACropPlot::BeginPlay()
 	Super::BeginPlay();
 
 	NiagaraHarvestEffect = FindComponentByTag<UActorComponent>("Effect");
-	HarvestSoundAudioComponent = FindComponentByClass<UAudioComponent>();
 }
 
 void ACropPlot::UpdateGrowthState(float DeltaSeconds)
@@ -138,22 +137,17 @@ ACrop* ACropPlot::Harvest()
 	{
 		NiagaraHarvestEffect->Activate(true);
 	}
-
-	if(HarvestSoundAudioComponent)
-	{
-		if(Crop->IsBig())
-		{
-			HarvestSoundAudioComponent->SetSound(BigCropSound);	
-		}
-		else
-		{
-			HarvestSoundAudioComponent->SetSound(SmallCropSound);	
-		}
-
-		OnCropHarvest.Broadcast();
-		HarvestSoundAudioComponent->Play();
-	}
 	
+	if(Crop->IsBig())
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, BigCropSoundCue, GetActorLocation());
+	}
+	else
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, SmallCropSoundCue, GetActorLocation());
+	}
+
+	OnCropHarvest.Broadcast();
 	return Crop;
 }
 

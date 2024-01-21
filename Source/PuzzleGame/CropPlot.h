@@ -8,6 +8,7 @@
 #include "Outlineable.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
+#include "Sound/SoundCue.h"
 #include "CropPlot.generated.h"
 
 constexpr float DEFAULT_GROWTH_STATE = 0.01f;
@@ -50,14 +51,12 @@ private:
 	UBoxComponent* BoxComponent;
 
 	UPROPERTY(EditAnywhere, Category="Audio")
-	USoundWave* SmallCropSound;
+	USoundCue* SmallCropSoundCue;
 
 	UPROPERTY(EditAnywhere, Category="Audio")
-	USoundWave* BigCropSound;
+	USoundCue* BigCropSoundCue;
 	
 	UActorComponent* NiagaraHarvestEffect;
-
-	UAudioComponent* HarvestSoundAudioComponent;
 	
 	bool Occupied;
 	
