@@ -93,6 +93,7 @@ void UFarmerComponent::AddSeeds(ECropType CropType, int SeedCount)
 		if(SeedInfo.CropType == CropType)
 		{
 			SeedInfo.SeedCount += SeedCount;
+			SeedsAdded.Broadcast(SeedInfo.CropType, SeedInfo.SeedCount);
 			return;
 		}
 	}
@@ -100,9 +101,10 @@ void UFarmerComponent::AddSeeds(ECropType CropType, int SeedCount)
 	FCropSeedInfo NewSeedInfo;
 	NewSeedInfo.CropType = CropType;
 	NewSeedInfo.SeedCount = SeedCount;
-
+	
 	CropSeedInventory.Add(NewSeedInfo);
-
+	SeedsAdded.Broadcast(CropType, SeedCount);
+	
 	if(LogCropSeedInventory)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Seed: %s | Count: %i"), ECrop_Loggable::FHelper::ToString(CropType), SeedCount);
@@ -127,6 +129,7 @@ void UFarmerComponent::PlantSeed()
 				if(CropPlot->Plant(CropSeedInventory[CurrentCropSeedIndex].CropType))
 				{
 					SeedInfo.SeedCount -= 1;
+					SeedPlanted.Broadcast();
 					if(SeedInfo.SeedCount <= 0)
 					{
 						CropSeedInventory.Remove(SeedInfo);
@@ -168,6 +171,16 @@ int UFarmerComponent::CycleThroughSeedInventory(float Direction)
 FCropSeedInfo UFarmerComponent::GetSeedInfo(int Index)
 {
 	return CropSeedInventory[Index];
+}
+
+int UFarmerComponent::GetCurrentSeedCount()
+{
+	return CropSeedInventory[CurrentCropSeedIndex].SeedCount;
+}
+
+ECropType UFarmerComponent::GetCurrentSeedType()
+{
+	return CropSeedInventory[CurrentCropSeedIndex].CropType;
 }
 
 bool UFarmerComponent::HasEnoughSeeds()

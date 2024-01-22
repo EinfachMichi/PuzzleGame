@@ -10,6 +10,12 @@
 UDELEGATE()
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlantModeChanged);
 
+UDELEGATE()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSeedPlanted);
+
+UDELEGATE()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSeedsAdded, ECropType, CropType, int, SeedCount);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PUZZLEGAME_API UFarmerComponent : public UActorComponent
 {
@@ -25,6 +31,12 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Farming")
 	FPlantModeChanged PlantModeChanged;
 
+	UPROPERTY(BlueprintAssignable, Category="Farming")
+	FSeedPlanted SeedPlanted;
+
+	UPROPERTY(BlueprintAssignable, Category="Farming")
+	FSeedsAdded SeedsAdded;
+	
 	UPROPERTY(BlueprintReadOnly, Category="Farming")
 	bool PlantMode;
 
@@ -55,10 +67,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Farming")
 	FCropSeedInfo GetSeedInfo(int Index);
+
+	UFUNCTION(BlueprintCallable, Category="Farming")
+	int GetCurrentSeedCount();
+
+	UFUNCTION(BlueprintCallable, Category="Farming")
+	ECropType GetCurrentSeedType();
+	
+	UFUNCTION(BlueprintCallable, Category="Farming")
+	bool HasEnoughSeeds();
 	
 private:
 	void ManagePlantMode();
-	bool HasEnoughSeeds();
 	
 protected:
 	virtual void BeginPlay() override;
