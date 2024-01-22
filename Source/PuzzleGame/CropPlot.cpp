@@ -33,6 +33,8 @@ void ACropPlot::BeginPlay()
 	Super::BeginPlay();
 
 	NiagaraHarvestEffect = FindComponentByTag<UActorComponent>("Effect");
+	UGameplayStatics::PrimeSound(BigCropSoundCue);
+	UGameplayStatics::PrimeSound(SmallCropSoundCue);
 }
 
 void ACropPlot::UpdateGrowthState(float DeltaSeconds)
