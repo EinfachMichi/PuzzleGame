@@ -103,6 +103,7 @@ void UFarmerComponent::AddSeeds(ECropType CropType, int SeedCount)
 	NewSeedInfo.SeedCount = SeedCount;
 	
 	CropSeedInventory.Add(NewSeedInfo);
+	CurrentCropSeedIndex = CropSeedInventory.Num() - 1;
 	SeedsAdded.Broadcast(CropType, SeedCount);
 	
 	if(LogCropSeedInventory)
@@ -122,27 +123,40 @@ void UFarmerComponent::PlantSeed()
 	
 	if(ACropPlot* CropPlot = Cast<ACropPlot>(CurrentLineTraceActor))
 	{
-		for (FCropSeedInfo& SeedInfo : CropSeedInventory)
+		if(!CropPlot->IsOccupied())
 		{
-			if(SeedInfo.CropType == CropSeedInventory[CurrentCropSeedIndex].CropType)
+			bool RemoveSeedInfo = false;
+			FCropSeedInfo SeedInfoToRemove;
+			for (FCropSeedInfo& SeedInfo : CropSeedInventory)
 			{
-				if(CropPlot->Plant(CropSeedInventory[CurrentCropSeedIndex].CropType))
+				if(SeedInfo.CropType == CropSeedInventory[CurrentCropSeedIndex].CropType)
 				{
-					SeedInfo.SeedCount -= 1;
-					SeedPlanted.Broadcast();
-					if(SeedInfo.SeedCount <= 0)
+					if(CropPlot->Plant(CropSeedInventory[CurrentCropSeedIndex].CropType))
 					{
-						CropSeedInventory.Remove(SeedInfo);
-						CycleThroughSeedInventory(1);
-					}
+						SeedInfo.SeedCount -= 1;
+						if(SeedInfo.SeedCount <= 0)
+						{
+							SeedInfoToRemove = SeedInfo;
+							RemoveSeedInfo = true;
+							break;
+						}
 
-					if (LogCropSeedInventory)
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Seed: %s | Count: %i"),
-							ECrop_Loggable::FHelper::ToString(CropSeedInventory[CurrentCropSeedIndex].CropType), SeedInfo.SeedCount);
+						if (LogCropSeedInventory)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Seed: %s | Count: %i"),
+								ECrop_Loggable::FHelper::ToString(CropSeedInventory[CurrentCropSeedIndex].CropType), SeedInfo.SeedCount);
+						}
 					}
 				}
 			}
+
+			if(RemoveSeedInfo)
+			{
+				CropSeedInventory.Remove(SeedInfoToRemove);
+				CycleThroughSeedInventory(1);
+			}
+		
+			SeedPlanted.Broadcast();	
 		}
 	}
 }
@@ -170,22 +184,34 @@ int UFarmerComponent::CycleThroughSeedInventory(float Direction)
 
 FCropSeedInfo UFarmerComponent::GetSeedInfo(int Index)
 {
+	if(CropSeedInventory.Num() < Index || CropSeedInventory.Num() == 0)
+	{
+		return FCropSeedInfo();
+	}
 	return CropSeedInventory[Index];
 }
 
 int UFarmerComponent::GetCurrentSeedCount()
 {
+	if(CropSeedInventory.Num() <= CurrentCropSeedIndex)
+	{
+		return -1;
+	}
 	return CropSeedInventory[CurrentCropSeedIndex].SeedCount;
 }
 
 ECropType UFarmerComponent::GetCurrentSeedType()
 {
+	if(CropSeedInventory.Num() < CurrentCropSeedIndex || CropSeedInventory.Num() == 0)
+	{
+		return ECropType::None;
+	}
 	return CropSeedInventory[CurrentCropSeedIndex].CropType;
 }
 
 bool UFarmerComponent::HasEnoughSeeds()
 {
-	if(CropSeedInventory.Num() <= CurrentCropSeedIndex)
+	if(CropSeedInventory.Num() < CurrentCropSeedIndex || CropSeedInventory.Num() == 0)
 	{
 		return false;
 	}

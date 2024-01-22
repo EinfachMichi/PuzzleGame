@@ -71,6 +71,7 @@ public:
 	bool Plant(ECropType NewCropType);
 	ACrop* Harvest();
 	void UpdatePlantableVisuels(bool Enabled, bool Requirement = false);
+	bool IsOccupied();
 
 private:
 	void UpdateGrowthState(float DeltaSeconds);

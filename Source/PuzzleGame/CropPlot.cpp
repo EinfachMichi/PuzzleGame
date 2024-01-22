@@ -170,6 +170,11 @@ void ACropPlot::UpdatePlantableVisuels(bool Enabled, bool Requirement)
 	}
 }
 
+bool ACropPlot::IsOccupied()
+{
+	return Occupied;
+}
+
 bool ACropPlot::IsHarvestable()
 {
 	if(GrowthState >= 1.f && Occupied)
