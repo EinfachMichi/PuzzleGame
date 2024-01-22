@@ -55,6 +55,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Audio")
 	USoundCue* BigCropSoundCue;
+
+	UPROPERTY(EditAnywhere, Category="Audio")
+	USoundCue* PlantSoundCue;
 	
 	UActorComponent* NiagaraHarvestEffect;
 	

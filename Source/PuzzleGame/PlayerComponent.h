@@ -20,7 +20,7 @@ public:
 	bool DebugLineTrace;
 
 	UPROPERTY(EditAnywhere, Category="PickedUp")
-	float RotationSpeed = 10.f;
+	float RotationSpeed = 150.f;
 
 private:
 	UCameraComponent* CameraComponent;

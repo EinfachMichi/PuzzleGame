@@ -35,6 +35,7 @@ void ACropPlot::BeginPlay()
 	NiagaraHarvestEffect = FindComponentByTag<UActorComponent>("Effect");
 	UGameplayStatics::PrimeSound(BigCropSoundCue);
 	UGameplayStatics::PrimeSound(SmallCropSoundCue);
+	UGameplayStatics::PrimeSound(PlantSoundCue);
 }
 
 void ACropPlot::UpdateGrowthState(float DeltaSeconds)
@@ -111,6 +112,8 @@ bool ACropPlot::Plant(ECropType NewCropType)
 		GrowthState = DEFAULT_GROWTH_STATE;
 		CropMass = GameMode->GetMass(CropType);
 		Occupied = true;
+		NiagaraHarvestEffect->SetActive(true);
+		UGameplayStatics::PlaySoundAtLocation(this, PlantSoundCue, GetActorLocation());
 		return true;
 	}
 	return false;
