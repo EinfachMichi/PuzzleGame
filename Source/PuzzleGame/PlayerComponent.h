@@ -25,6 +25,7 @@ public:
 private:
 	UCameraComponent* CameraComponent;
 	FHitResult LineTraceHitResult;
+	UPROPERTY(VisibleAnywhere)
 	AActor* CurrentLineTraceActor;
 	AActor* OldLineTraceActor;
 	APickupableItem* PickedUpItem;

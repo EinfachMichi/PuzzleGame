@@ -98,6 +98,7 @@ void UPlayerComponent::Interact()
 
 	if(IInteractable* Interactable = Cast<IInteractable>(CurrentLineTraceActor))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Interact"));
 		Interactable->Interact(Cast<APawn>(GetOwner()));
 	}
 }
