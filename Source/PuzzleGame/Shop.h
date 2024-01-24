@@ -28,7 +28,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Buttons")
 	AShopButton* BuyButton;
 	
-	UPROPERTY(EditAnywhere, Category="Shop")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Shop")
 	TMap<EItemType, FShopItemInfo> ShopInfos;
 
 	UPROPERTY(EditAnywhere, Category="Display")

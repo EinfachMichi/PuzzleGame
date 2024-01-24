@@ -14,8 +14,6 @@ void UPlayerComponent::BeginPlay()
 
 	CameraComponent = GetOwner()->FindComponentByClass<UCameraComponent>();
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-
-	AddCurrency(100);
 }
 
 void UPlayerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

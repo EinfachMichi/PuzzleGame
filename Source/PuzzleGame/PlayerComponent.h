@@ -62,7 +62,10 @@ public:
 	void PickupItem(APickupableItem* Item);
 	FHitResult GetHitResult();
 	APickupableItem* GetPickedUpItem();
+
+	UFUNCTION(BlueprintCallable)
 	void AddCurrency(int Value);
+	
 	void RemoveCurrency(int Value);
 	int GetCurrency();
 	

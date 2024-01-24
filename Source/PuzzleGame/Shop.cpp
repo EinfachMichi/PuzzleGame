@@ -105,6 +105,11 @@ void AShop::BuyItem(APawn* Pawn)
 {
 	TArray<EItemType> ShopItems;
 	ShopInfos.GetKeys(ShopItems);
+
+	if(ShopItems.Num() <= 0)
+	{
+		return;
+	}
 	
 	if(UPlayerComponent* PlayerComponent = Pawn->FindComponentByClass<UPlayerComponent>())
 	{
@@ -112,9 +117,8 @@ void AShop::BuyItem(APawn* Pawn)
 		if(PlayerComponent->GetCurrency() >= ShopItemInfo.Price)
 		{
 			PlayerComponent->RemoveCurrency(ShopItemInfo.Price);
-			AActor* Actor = GetWorld()->SpawnActor<AActor>(ShopItemInfo.ItemActor->GeneratedClass,
-				DropPosition->GetComponentLocation(), DropPosition->GetComponentRotation());
-
+			AActor* Actor = GetWorld()->SpawnActor<AActor>(ShopItemInfo.ItemActor->GeneratedClass, DropPosition->GetComponentLocation(), DropPosition->GetComponentRotation());
+				
 			if(ASeedBagActor* SeedBagActor = Cast<ASeedBagActor>(Actor))
 			{
 				SeedBagActor->SetCropType(ShopItemInfo.CropType);
