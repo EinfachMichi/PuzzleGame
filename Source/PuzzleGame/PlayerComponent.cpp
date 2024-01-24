@@ -22,6 +22,11 @@ void UPlayerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	ShootLineTrace();
 	CheckForHitResultEvents();
+
+	if(!PickedUpItem && PhysicsHandle->GrabbedComponent)
+	{
+		ReleaseItem();
+	}
 }
 
 void UPlayerComponent::ShootLineTrace()
@@ -148,7 +153,7 @@ void UPlayerComponent::PickingUpItem()
 
 void UPlayerComponent::ReleaseItem()
 {
-	if(!PickedUpItem || !PhysicsHandle)
+	if(!PhysicsHandle)
 	{
 		return;
 	}

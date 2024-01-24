@@ -9,7 +9,7 @@ UCLASS()
 class PUZZLEGAME_API ACrop : public APickupableItem
 {
 	GENERATED_BODY()
-
+	
 private:
 	ECropType CropType;
 	float Mass;
@@ -28,4 +28,5 @@ public:
 	ECropType GetCropType();
 
 	bool IsBig();
+
 };

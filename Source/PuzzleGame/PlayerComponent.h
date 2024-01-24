@@ -25,12 +25,14 @@ public:
 	UPROPERTY(EditAnywhere, Category="PickedUp")
 	float RotationSpeed = 150.f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	AActor* CurrentLineTraceActor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	AActor* OldLineTraceActor;
+	
 private:
 	UCameraComponent* CameraComponent;
 	FHitResult LineTraceHitResult;
-	UPROPERTY(VisibleAnywhere)
-	AActor* CurrentLineTraceActor;
-	AActor* OldLineTraceActor;
 	APickupableItem* PickedUpItem;
 	float PickedUpOffset;
 	FRotator PickedUpItemRotation;
@@ -60,6 +62,7 @@ public:
 	FOnCurrencyChanged OnCurrencyChanged;
 	
 	void PickupItem(APickupableItem* Item);
+	UFUNCTION(BlueprintCallable)
 	FHitResult GetHitResult();
 	APickupableItem* GetPickedUpItem();
 
