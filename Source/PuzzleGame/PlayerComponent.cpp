@@ -14,6 +14,8 @@ void UPlayerComponent::BeginPlay()
 
 	CameraComponent = GetOwner()->FindComponentByClass<UCameraComponent>();
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+
+	AddCurrency(100);
 }
 
 void UPlayerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -98,7 +100,6 @@ void UPlayerComponent::Interact()
 
 	if(IInteractable* Interactable = Cast<IInteractable>(CurrentLineTraceActor))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Interact"));
 		Interactable->Interact(Cast<APawn>(GetOwner()));
 	}
 }
@@ -194,11 +195,13 @@ APickupableItem* UPlayerComponent::GetPickedUpItem()
 void UPlayerComponent::AddCurrency(int Value)
 {
 	Currency += Value;
+	OnCurrencyChanged.Broadcast(Currency);
 }
 
 void UPlayerComponent::RemoveCurrency(int Value)
 {
 	Currency -= Value;
+	OnCurrencyChanged.Broadcast(Currency);
 }
 
 int UPlayerComponent::GetCurrency()

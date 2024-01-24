@@ -7,6 +7,9 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PlayerComponent.generated.h"
 
+UDELEGATE()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCurrencyChanged, int, Currency);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PUZZLEGAME_API UPlayerComponent : public UActorComponent
 {
@@ -52,6 +55,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="PickedUp")
 	void RotatePickedUpItem(float Direction);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnCurrencyChanged OnCurrencyChanged;
 	
 	void PickupItem(APickupableItem* Item);
 	FHitResult GetHitResult();
