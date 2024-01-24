@@ -185,7 +185,7 @@ int UFarmerComponent::GetCurrentSeedCount()
 {
 	if(CropSeedInventory.Num() <= CurrentCropSeedIndex)
 	{
-		return -1;
+		return 0;
 	}
 	return CropSeedInventory[CurrentCropSeedIndex].SeedCount;
 }
