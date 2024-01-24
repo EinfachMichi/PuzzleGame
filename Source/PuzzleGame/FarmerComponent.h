@@ -8,9 +8,6 @@
 #include "FarmerComponent.generated.h"
 
 UDELEGATE()
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlantModeChanged);
-
-UDELEGATE()
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSeedPlanted);
 
 UDELEGATE()
@@ -29,16 +26,10 @@ public:
 	TArray<FCropSeedInfo> CropSeedInventory;
 
 	UPROPERTY(BlueprintAssignable, Category="Farming")
-	FPlantModeChanged PlantModeChanged;
-
-	UPROPERTY(BlueprintAssignable, Category="Farming")
 	FSeedPlanted SeedPlanted;
 
 	UPROPERTY(BlueprintAssignable, Category="Farming")
 	FSeedsAdded SeedsAdded;
-	
-	UPROPERTY(BlueprintReadOnly, Category="Farming")
-	bool PlantMode;
 
 private:
 	int CurrentCropSeedIndex;
@@ -51,10 +42,8 @@ public:
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void AddSeeds(ECropType CropType, int SeedCount);
-
 	UFUNCTION(BlueprintCallable, Category="Farming")
-	void TogglePlantMode();
+	void AddSeeds(ECropType CropType, int SeedCount);
 
 	UFUNCTION(BlueprintCallable, Category="Farming")
 	void PlantSeed();
@@ -78,7 +67,7 @@ public:
 	bool HasEnoughSeeds();
 	
 private:
-	void ManagePlantMode();
+	void ManageVisuels();
 	
 protected:
 	virtual void BeginPlay() override;

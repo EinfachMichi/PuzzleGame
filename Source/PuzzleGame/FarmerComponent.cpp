@@ -18,41 +18,30 @@ void UFarmerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	ManagePlantMode();
+	ManageVisuels();
 }
 
-void UFarmerComponent::TogglePlantMode()
+void UFarmerComponent::ManageVisuels()
 {
-	if(PlantMode)
-	{
-		if(ACropPlot* CropPlot = Cast<ACropPlot>(CurrentLineTraceActor))
-		{
-			CropPlot->UpdatePlantableVisuels(false);
-		}
-	}
-	
-	PlantMode = !PlantMode;
-	PlantModeChanged.Broadcast();
-}
-
-void UFarmerComponent::ManagePlantMode()
-{
-	if(!PlantMode)
+	if(PlayerComponent->GetPickedUpItem())
 	{
 		return;
 	}
-
+	
 	CurrentLineTraceActor = PlayerComponent->GetHitResult().GetActor();
 	
 	if(ACropPlot* CropPlot = Cast<ACropPlot>(CurrentLineTraceActor))
 	{
-		CropPlot->UpdatePlantableVisuels(true, HasEnoughSeeds());
-
-		if(ACropPlot* OldCropPlot = Cast<ACropPlot>(OldLineTraceActor))
+		if(!CropPlot->IsOccupied())
 		{
-			if(CurrentLineTraceActor != OldLineTraceActor)
+			CropPlot->UpdatePlantableVisuels(true, HasEnoughSeeds());
+
+			if(ACropPlot* OldCropPlot = Cast<ACropPlot>(OldLineTraceActor))
 			{
-				OldCropPlot->UpdatePlantableVisuels(false);
+				if(CurrentLineTraceActor != OldLineTraceActor)
+				{
+					OldCropPlot->UpdatePlantableVisuels(false);
+				}
 			}
 		}
 	}
@@ -69,7 +58,7 @@ void UFarmerComponent::ManagePlantMode()
 
 void UFarmerComponent::HarvestCrop()
 {
-	if(PlantMode || PlayerComponent->GetPickedUpItem())
+	if(PlayerComponent->GetPickedUpItem())
 	{
 		return;
 	}
@@ -114,7 +103,7 @@ void UFarmerComponent::AddSeeds(ECropType CropType, int SeedCount)
 
 void UFarmerComponent::PlantSeed()
 {
-	if(!PlantMode || !HasEnoughSeeds())
+	if(!HasEnoughSeeds() || PlayerComponent->GetPickedUpItem())
 	{
 		return;
 	}
@@ -141,6 +130,7 @@ void UFarmerComponent::PlantSeed()
 							break;
 						}
 
+						CropPlot->UpdatePlantableVisuels(false);
 						if (LogCropSeedInventory)
 						{
 							UE_LOG(LogTemp, Warning, TEXT("Seed: %s | Count: %i"),
@@ -163,7 +153,7 @@ void UFarmerComponent::PlantSeed()
 
 int UFarmerComponent::CycleThroughSeedInventory(float Direction)
 {
-	if(CropSeedInventory.Num() <= 0 || !PlantMode)
+	if(CropSeedInventory.Num() <= 0)
 	{
 		return -1;
 	}
