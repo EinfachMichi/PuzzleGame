@@ -14,8 +14,10 @@ class PUZZLEGAME_API AFarmingGameMode : public AGameModeBase
 public:
 	UPROPERTY(EditAnywhere, Category="Farming")
 	TMap<ECropType, FCropActorInfo> CropInfos;
+
 	
 	UStaticMesh* GetSeedMesh(ECropType CropType);
 	float GetGrowthRate(ECropType CropType);
 	float GetMass(ECropType CropType);
+	UStaticMesh* GetSeedBagMesh(ECropType CropType);
 };

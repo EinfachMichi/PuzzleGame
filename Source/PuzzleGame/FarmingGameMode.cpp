@@ -29,3 +29,13 @@ float AFarmingGameMode::GetMass(ECropType CropType)
 	}
 	return -1;
 }
+
+UStaticMesh* AFarmingGameMode::GetSeedBagMesh(ECropType CropType)
+{
+	if(CropInfos.Contains(CropType))
+	{
+		FCropActorInfo CropInfo = CropInfos[CropType];
+		return CropInfo.SeedBagMesh;
+	}
+	return nullptr;
+}

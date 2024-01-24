@@ -19,6 +19,11 @@ public:
 
 	virtual void Interact(APawn* Pawn) override;
 
+	void SetCropType(ECropType NewCropType);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateMesh(ECropType Type);
+
 protected:
 	virtual void BeginPlay() override;
 };

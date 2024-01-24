@@ -190,3 +190,18 @@ APickupableItem* UPlayerComponent::GetPickedUpItem()
 {
 	return PickedUpItem;
 }
+
+void UPlayerComponent::AddCurrency(int Value)
+{
+	Currency += Value;
+}
+
+void UPlayerComponent::RemoveCurrency(int Value)
+{
+	Currency -= Value;
+}
+
+int UPlayerComponent::GetCurrency()
+{
+	return Currency;
+}

@@ -11,6 +11,7 @@ class PUZZLEGAME_API AItemActor : public AStaticMeshActor
 
 public:
 	UStaticMeshComponent* MeshComponent;
+	UStaticMeshComponent* GetMesh();
 	
 protected:
 	virtual void BeginPlay() override;

@@ -13,7 +13,7 @@ class PUZZLEGAME_API APickupableItem : public AItemActor, public IOutlineable, p
 
 public:
 	ECollisionChannel CollisionChannel = ECC_Pawn;
-	ECollisionResponse CollisionResponse = ECR_Block;
+	ECollisionResponse CollisionResponse = ECR_Ignore;
 
 	virtual void OnPickedUp();
 	virtual void OnReleased();

@@ -16,4 +16,7 @@ struct PUZZLEGAME_API FCropActorInfo
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Mass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMesh* SeedBagMesh;
 };

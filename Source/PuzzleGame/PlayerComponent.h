@@ -32,6 +32,9 @@ private:
 	float PickedUpOffset;
 	FRotator PickedUpItemRotation;
 	UPhysicsHandleComponent* PhysicsHandle;
+
+	UPROPERTY(EditAnywhere)
+	int Currency;
 	
 public:	
 	UPlayerComponent();
@@ -53,6 +56,9 @@ public:
 	void PickupItem(APickupableItem* Item);
 	FHitResult GetHitResult();
 	APickupableItem* GetPickedUpItem();
+	void AddCurrency(int Value);
+	void RemoveCurrency(int Value);
+	int GetCurrency();
 	
 private:
 	void ShootLineTrace();
