@@ -16,7 +16,7 @@ struct PUZZLEGAME_API FShopItemInfo
 	int Price;
 
 	UPROPERTY(EditAnywhere, Category="Shop")
-	UBlueprint* ItemActor;
+	TSubclassOf<AActor> ItemActor;
 
 	UPROPERTY(EditAnywhere, Category="Shop")
 	ECropType CropType;

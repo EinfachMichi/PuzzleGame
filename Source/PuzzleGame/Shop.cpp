@@ -117,7 +117,9 @@ void AShop::BuyItem(APawn* Pawn)
 		if(PlayerComponent->GetCurrency() >= ShopItemInfo.Price)
 		{
 			PlayerComponent->RemoveCurrency(ShopItemInfo.Price);
-			AActor* Actor = GetWorld()->SpawnActor<AActor>(ShopItemInfo.ItemActor->GeneratedClass, DropPosition->GetComponentLocation(), DropPosition->GetComponentRotation());
+			
+			AActor* Actor = GetWorld()->SpawnActor<AActor>(ShopItemInfo.ItemActor,
+				DropPosition->GetComponentLocation(), DropPosition->GetComponentRotation());
 				
 			if(ASeedBagActor* SeedBagActor = Cast<ASeedBagActor>(Actor))
 			{

@@ -19,4 +19,9 @@ struct PUZZLEGAME_API FCropSeedInfo
 	{
 		return CropType == Other.CropType && SeedCount == Other.SeedCount;
 	}
+
+	bool operator==(ECropType Crop) const
+	{
+		return CropType == Crop;
+	}
 };

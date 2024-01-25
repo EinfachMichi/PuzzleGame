@@ -83,6 +83,15 @@ void UFarmerComponent::AddSeeds(ECropType CropType, int SeedCount)
 		{
 			SeedInfo.SeedCount += SeedCount;
 			SeedsAdded.Broadcast(SeedInfo.CropType, SeedInfo.SeedCount);
+
+			for(int i = 0; i < CropSeedInventory.Num(); i++)
+			{
+				if(CropType == CropSeedInventory[i])
+				{
+					CurrentCropSeedIndex = i;
+					break;
+				}
+			}
 			return;
 		}
 	}
@@ -92,7 +101,16 @@ void UFarmerComponent::AddSeeds(ECropType CropType, int SeedCount)
 	NewSeedInfo.SeedCount = SeedCount;
 	
 	CropSeedInventory.Add(NewSeedInfo);
-	CurrentCropSeedIndex = CropSeedInventory.Num() - 1;
+
+	for(int i = 0; i < CropSeedInventory.Num(); i++)
+	{
+		if(CropType == CropSeedInventory[i])
+		{
+			CurrentCropSeedIndex = i;
+			break;
+		}
+	}
+	
 	SeedsAdded.Broadcast(CropType, SeedCount);
 	
 	if(LogCropSeedInventory)

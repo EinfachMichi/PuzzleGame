@@ -22,9 +22,11 @@ public:
 	UStaticMeshComponent* GetStaticMeshComponent();
 	
 	void SetMass(float NewMass);
+	UFUNCTION(BlueprintCallable)
 	float GetMass();
 
 	void SetCropType(ECropType NewCropType);
+	UFUNCTION(BlueprintCallable)
 	ECropType GetCropType();
 
 	bool IsBig();
